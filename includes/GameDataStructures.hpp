@@ -2,6 +2,7 @@
 #define GAMEDATASTRUCTURES_HPP
 
 #include <raylib.h>
+// raylib for rectangle simplification in structures
 
 // Define Game States
 enum GameState {

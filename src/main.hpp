@@ -1,18 +1,18 @@
 #ifndef MAIN_HPP
 #define MAIN_HPP
 
-// Include necessary standard libraries
+// Standard library includes
+#include <vector>
+#include <cstdlib>
 #include <iostream>
 
-// Custom includes
+// Game logic includes
 #include "includes/PointMultiplier.hpp"
 #include "includes/GameDataStructures.hpp"
 #include "includes/HandleCombat.hpp"
 #include "includes/PointMultiplier.hpp"
 
+// raylib for graphics
 #include "raylib.h"
-
-#include <vector>
-#include <cstdlib>
 
 #endif // MAIN_HPP
