@@ -32,7 +32,7 @@ all: build
 
 # Build rule based on platform
 build:
-	$(COMPILER) $(CFILES) $(SOURCE_LIBS) $(OUT_FILE) $(PLATFORM_OPTS)
+	$(COMPILER) $(CFILES) $(SOURCE_LIBS) $(OUT_FILE) $(PLATFORM_OPTS) -std=c++11
 
 # Clean up generated binaries
 clean:

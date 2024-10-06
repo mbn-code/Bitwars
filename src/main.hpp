@@ -19,7 +19,7 @@
 #include "includes/GameDataStructures.hpp"
 #include "includes/HandleCombat.hpp"
 #include "includes/HandleHighScore.hpp"
-#include "../lib/macos_arm/raylib.h"
+#include "lib/raylib.h"
 #else  // Fallback for other platforms
 #include "includes/PointMultiplier.hpp"
 #include "includes/GameDataStructures.hpp"
