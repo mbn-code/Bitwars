@@ -14,7 +14,6 @@
 #include "includes/PointMultiplier.hpp"
 #include "includes/HandleHighScore.hpp"
 
-
 // raylib for graphics
 #include "raylib.h"
 

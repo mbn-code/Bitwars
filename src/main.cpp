@@ -179,7 +179,7 @@ void DrawCenteredText(const char* text, int posX, int posY, int fontSize, Color 
 }
 
 void DrawTimer(float elapsedTime) {
-    DrawCenteredText(TextFormat("Time: %.2f", elapsedTime), SCREEN_WIDTH/2, SCREEN_WIDTH/2, 20, BLACK);
+    DrawCenteredText(TextFormat("Time: %.2f", elapsedTime), SCREEN_WIDTH/2, 30, 20, BLACK);
 }
 
 int main() {
@@ -311,17 +311,22 @@ while (!WindowShouldClose()) {
             break;
 
         case END_SCREEN:
-            DrawText(playerBase.health <= 0 ? "You Lost!" : "You Won!", SCREEN_WIDTH / 2 - 60, SCREEN_HEIGHT / 2 - 20, 20, BLACK);
-            DrawText("Press ENTER to return to start", SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 + 20, 20, DARKGRAY);
-            
-            if (!gameWon) {
-                gameWon = true;
-                winTime = elapsedTime;
-                WriteLastScore(winTime);
+            if (IsKeyPressed(KEY_ENTER)) {
+                currentState = START_SCREEN;
             }
             
-            break;
-    }
+            // Check if the game is won and write the score
+            if (!gameWon) {
+                gameWon = true;
+                winTime = elapsedTime; // Capture the win time
+                WriteLastScore(winTime); // Write score only when game is won
+                std::cout << "Game won! Elapsed time: " << winTime << std::endl; // Debugging statement
+            }
+        
+        break;
+
+        
+        }
 
     EndDrawing();
 
