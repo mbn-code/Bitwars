@@ -11,7 +11,6 @@
 #include "includes/PointMultiplier.hpp"
 #include "includes/GameDataStructures.hpp"
 #include "includes/HandleCombat.hpp"
-#include "includes/PointMultiplier.hpp"
 #include "includes/HandleHighScore.hpp"
 
 // raylib for graphics
