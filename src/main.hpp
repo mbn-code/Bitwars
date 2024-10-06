@@ -5,7 +5,6 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
-#include <algorithm>  // For std::remove_if
 
 // Platform-specific includes for game logic and Raylib
 #ifdef _WIN32  // Windows-specific includes
