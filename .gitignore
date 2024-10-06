@@ -53,3 +53,5 @@ ipch/
 *.pch
 *.vspscc
 *.vssscc
+
+bin

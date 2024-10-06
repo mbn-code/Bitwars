@@ -13,7 +13,7 @@
 #include "../includes/GameDataStructures.hpp"
 #include "../includes/HandleCombat.hpp"
 #include "../includes/HandleHighScore.hpp"
-#include "../lib/raylib.h"
+#include "../lib/windows/raylib.h"
 #elif __APPLE__  // macOS-specific includes
 #include "includes/PointMultiplier.hpp"
 #include "includes/GameDataStructures.hpp"

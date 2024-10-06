@@ -1,11 +1,12 @@
 # Detect the platform from a passed variable or use default (macOS)
 PLATFORM ?= macos
 
-# Define the compiler
+# Compiler definitions
 COMPILER = g++
+STD = -std=c++11
 
 # Include paths for headers and Raylib
-SOURCE_LIBS = -Ilib/ -Iincludes/
+SOURCE_LIBS = -Ilib/ -Iincludes
 
 # Output binaries
 WIN_OUT = -o "bin/build_windows.exe"
@@ -16,13 +17,15 @@ CFILES = src/*.cpp includes/HandleCombat.cpp includes/PointMultiplier.cpp includ
 
 # Platform-specific compiler and linker options
 ifeq ($(PLATFORM), windows)
-    COMPILER = g++  # or clang++ if using MinGW's clang
-    PLATFORM_OPTS = -Llib/ -lraylib -lopengl32 -lgdi32 -lwinmm
+    # Windows-specific settings
+    COMPILER = g++
+    PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm
     OUT_FILE = $(WIN_OUT)
     RM = del /f /q
 else ifeq ($(PLATFORM), macos)
-    COMPILER = clang++  # macOS compiler
-    PLATFORM_OPTS = -Llib/ -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL lib/libraylib.a
+    # macOS-specific settings
+    COMPILER = clang++
+    PLATFORM_OPTS = -Llib/macos -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL lib/macos/libraylib.a
     OUT_FILE = $(MACOS_OUT)
     RM = rm -f
 endif
@@ -32,7 +35,7 @@ all: build
 
 # Build rule based on platform
 build:
-	$(COMPILER) $(CFILES) $(SOURCE_LIBS) $(OUT_FILE) $(PLATFORM_OPTS) -std=c++11
+	$(COMPILER) $(CFILES) $(SOURCE_LIBS) $(OUT_FILE) $(PLATFORM_OPTS) $(STD)
 
 # Clean up generated binaries
 clean:
