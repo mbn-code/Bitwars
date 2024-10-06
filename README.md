@@ -1,6 +1,8 @@
 
 # Bitwars - cpp raylib project
 
+The reason I made this is to challenge myself, to make something that is similar to a game, or a game structure without using a game engine like I have before. 
+
 ## Overview
 
 A simple war simulation game developed using C++ and Raylib. Features include player and NPC bases, unit spawning, and combat mechanics.
