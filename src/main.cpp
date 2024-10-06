@@ -68,9 +68,6 @@ void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unitType, bool isP
     units.push_back(newUnit);
 }
 
-// Function to calculate point multiplier based on health
-float CalculatePointMultiplier(); 
-
 // Function to update unit positions and check for collisions
 void UpdateUnits(std::vector<Unit>& units, Base& opponentBase) {
     for (auto& unit : units) {
