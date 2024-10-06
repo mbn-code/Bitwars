@@ -1,0 +1,36 @@
+# Ignore build directories
+/build/
+/bin/
+/obj/
+
+# Ignore raylib compiled libraries
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+
+# Ignore temporary files
+*.tmp
+*.log
+
+# Ignore compiled object files
+*.o
+*.obj
+
+# Ignore executable files
+*.exe
+*.out
+
+# Ignore C++ backup files
+*.gch
+*.pch
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.code-workspace
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
