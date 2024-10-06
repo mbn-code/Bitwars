@@ -68,6 +68,12 @@ void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unitType, bool isP
             newUnit.damage = 20;
             newUnit.speed = UNIT_SPEED - 1.0f;  // Slow speed
             break;
+        case BIT:
+            newUnit.hitbox = {isPlayerUnit ? base.hitbox.x + base.hitbox.width : base.hitbox.x - 20, base.hitbox.y + base.hitbox.height / 2 - 10, 20, 20};
+            newUnit.health = 1;
+            newUnit.damage = GetRandomValue(0, 1);
+            newUnit.speed = UNIT_SPEED + 1.1f; // Fast speed 
+            break;
     }
 
     units.push_back(newUnit);
@@ -91,27 +97,31 @@ void UpdateUnits(std::vector<Unit>& units, Base& opponentBase, std::vector<Unit>
         // Check for collisions with opponent units
         for (auto& opponentUnit : opponentUnits) {
             if (CheckCollisionRecs(unit.hitbox, opponentUnit.hitbox)) {
-                // Inflict damage on both units
-                unit.health -= opponentUnit.damage;
-                opponentUnit.health -= unit.damage;
+            // Inflict damage on both units
+            unit.health -= opponentUnit.damage;
+            opponentUnit.health -= unit.damage;
 
-                // If either unit's health is less than or equal to zero, they are removed
-                if (unit.health <= 0) {
-                    unit.health = 0; // Ensure health doesn't go negative
-                    if (opponentUnit.type == TANK) {
-                        opponentBase.points += 10;  // Award points to the opponent for killing a player unit
-                    } else {
-                        opponentBase.points += 5;  // Award points to the opponent for killing a player unit
-                    }
+            // If either unit's health is less than or equal to zero, they are removed
+            if (unit.health <= 0) {
+                unit.health = 0; // Ensure health doesn't go negative
+                if (opponentUnit.type == TANK) {
+                opponentBase.points += 10;  // Award points to the opponent for killing a player unit
+                } else if (opponentUnit.type == BIT) {
+                opponentBase.points += GetRandomValue(0, 1);  // Award random points (0 or 1) for killing a bit
+                } else {
+                opponentBase.points += 5;  // Award points to the opponent for killing a player unit
                 }
-                if (opponentUnit.health <= 0) {
-                    opponentUnit.health = 0; // Ensure health doesn't go negative
-                    if (unit.type == TANK) {
-                        playerBase.points += 10;  // Award points to the player for killing an opponent unit
-                    } else {
-                        playerBase.points += 5;  // Award points to the player for killing an opponent unit
-                    }
+            }
+            if (opponentUnit.health <= 0) {
+                opponentUnit.health = 0; // Ensure health doesn't go negative
+                if (unit.type == TANK) {
+                playerBase.points += 10;  // Award points to the player for killing an opponent unit
+                } else if (unit.type == BIT) {
+                playerBase.points += GetRandomValue(0, 1);  // Award random points (0 or 1) for killing a bit
+                } else {
+                playerBase.points += 5;  // Award points to the player for killing an opponent unit
                 }
+            }
             }
         }
     }
@@ -137,17 +147,29 @@ void DrawHealthBar(const Unit& unit) {
     if (unit.type == TANK) {
         DrawRectangle(unit.hitbox.x, unit.hitbox.y - 15, healthBarWidth * healthPercentage, 5, healthColor);
         DrawRectangleLines(unit.hitbox.x, unit.hitbox.y - 15, healthBarWidth, 5, BLACK);
+    } else if (unit.type == BIT) {
+        DrawRectangle(unit.hitbox.x, unit.hitbox.y - 5, healthBarWidth * healthPercentage, 5, healthColor);
+        DrawRectangleLines(unit.hitbox.x, unit.hitbox.y - 5, healthBarWidth, 5, BLACK);
     }
 
+}
+
+void DrawBit(const Unit& unit) {
+    // Implement drawing logic for bits
+    DrawRectangle(unit.hitbox.x, unit.hitbox.y, 5, 5, unit.isPlayerUnit ? BLUE : RED);
 }
 
 void DrawUnits(const std::vector<Unit>& units) {
     for (const auto& unit : units) {
-        Color unitColor = unit.isPlayerUnit ? BLUE : RED;
-        DrawRectangleRec(unit.hitbox, unitColor);
-        DrawHealthBar(unit);
+        if (unit.type == BIT) {
+            DrawBit(unit);
+        } else {
+            DrawRectangle(unit.hitbox.x, unit.hitbox.y, unit.hitbox.width, unit.hitbox.height, unit.isPlayerUnit ? BLUE : RED);
+            DrawHealthBar(unit);
+        }
     }
 }
+
 
 void DrawBases(const Base& playerBase, const Base& npcBase) {
     // Draw player and NPC bases with distinct colors
@@ -167,11 +189,12 @@ void DrawImprovedUI(const Base& playerBase, const Base& npcBase) {
     DrawText(TextFormat("Player Points: %d", playerBase.points), 20, 100, 20, BLACK);
     DrawText(TextFormat("NPC Points: %d", npcBase.points), SCREEN_WIDTH - 220, 100, 20, BLACK);
 
-    DrawText("Unit Purchase Options:", 20, SCREEN_HEIGHT - 150, 20, DARKGRAY);
-    DrawText("[1] Type 1 Soldier - 5 Points", 20, SCREEN_HEIGHT - 120, 20, DARKGRAY);
-    DrawText("[2] Type 2 Soldier - 10 Points", 20, SCREEN_HEIGHT - 90, 20, DARKGRAY);
-    DrawText("[3] Type 3 Soldier - 30 Points", 20, SCREEN_HEIGHT - 60, 20, DARKGRAY);
-    DrawText("[4] Tank - 50 Points", 20, SCREEN_HEIGHT - 30, 20, DARKGRAY);
+    DrawText("Unit Purchase Options:", 20, SCREEN_HEIGHT - 200, 20, DARKGRAY);
+    DrawText("[1] Type 1 Soldier - 5 Points", 20, SCREEN_HEIGHT - 170, 20, DARKGRAY);
+    DrawText("[2] Type 2 Soldier - 10 Points", 20, SCREEN_HEIGHT - 140, 20, DARKGRAY);
+    DrawText("[3] Type 3 Soldier - 30 Points", 20, SCREEN_HEIGHT - 110, 20, DARKGRAY);
+    DrawText("[4] Tank - 50 Points", 20, SCREEN_HEIGHT - 80, 20, DARKGRAY);
+    DrawText("[5] Bit - 2 Points", 20, SCREEN_HEIGHT - 50, 20, DARKGRAY);
 }
 
 void DrawCenteredText(const char* text, int posX, int posY, int fontSize, Color color) {
@@ -228,14 +251,39 @@ while (!WindowShouldClose()) {
                 SpawnUnit(playerUnits, playerBase, TANK, true);
                 playerBase.points -= 50;
             }
+            if (IsKeyPressed(KEY_FIVE) && playerBase.points >= 2) {
+                SpawnUnit(playerUnits, playerBase, BIT, true);
+                playerBase.points -= 2;
+            }
 
-            // NPC randomly spawns units based on its points
-            if (GetRandomValue(0, 100) < 2) {  // NPC spawns units at random intervals
-                UnitType randomType = static_cast<UnitType>(GetRandomValue(0, 3));  // Randomly select a unit type
-                int cost = (randomType == TYPE_1_SOLDIER) ? 5 : (randomType == TYPE_2_SOLDIER) ? 10 : (randomType == TYPE_3_SOLDIER) ? 30 : 50;
-                if (npcBase.points >= cost) {
-                    SpawnUnit(npcUnits, npcBase, randomType, false);
-                    npcBase.points -= cost;
+            // NPC behavior: offensive and defensive modes
+            bool isOffensive;
+            isOffensive = GetRandomValue(0, 1);  // Randomly decide between offensive and defensive mode
+
+            if (isOffensive) {
+                // Offensive mode: NPC spawns more aggressive units
+                if (GetRandomValue(0, 100) < 5) {  // Higher chance to spawn units in offensive mode
+                    UnitType randomType = static_cast<UnitType>(GetRandomValue(0, 4));  // Randomly select a unit type including BIT
+                    int cost = (randomType == TYPE_1_SOLDIER) ? 5 : 
+                            (randomType == TYPE_2_SOLDIER) ? 10 : 
+                            (randomType == TYPE_3_SOLDIER) ? 30 : 
+                            (randomType == TANK) ? 50 : 2;  // Cost for BIT is 2 points
+                    if (npcBase.points >= cost) {
+                        SpawnUnit(npcUnits, npcBase, randomType, false);
+                        npcBase.points -= cost;
+                    }
+                }
+            } else {
+                // Defensive mode: NPC spawns units less frequently but focuses on stronger units
+                if (GetRandomValue(0, 100) < 2) {  // Lower chance to spawn units in defensive mode
+                    UnitType randomType = static_cast<UnitType>(GetRandomValue(1, 4));  // Randomly select a stronger unit type (excluding TYPE_1_SOLDIER)
+                    int cost = (randomType == TYPE_2_SOLDIER) ? 10 : 
+                            (randomType == TYPE_3_SOLDIER) ? 30 : 
+                            (randomType == TANK) ? 50 : 2;  // Cost for BIT is 2 points
+                    if (npcBase.points >= cost) {
+                        SpawnUnit(npcUnits, npcBase, randomType, false);
+                        npcBase.points -= cost;
+                    }
                 }
             }
 
@@ -315,12 +363,15 @@ while (!WindowShouldClose()) {
                 currentState = START_SCREEN;
             }
             
+            DrawText("Game Over!", SCREEN_WIDTH / 2 - 60, SCREEN_HEIGHT / 2 - 20, 20, GRAY);
+            DrawText(TextFormat("Time: %.2f seconds", winTime), SCREEN_WIDTH / 2 - 60, SCREEN_HEIGHT / 2, 20, GRAY);
+            DrawText("Press ENTER to restart", SCREEN_WIDTH / 2 - 60, SCREEN_HEIGHT / 2 + 20, 20, GRAY);
+
             // Check if the game is won and write the score
             if (!gameWon) {
                 gameWon = true;
                 winTime = elapsedTime; // Capture the win time
                 WriteLastScore(winTime); // Write score only when game is won
-                std::cout << "Game won! Elapsed time: " << winTime << std::endl; // Debugging statement
             }
         
         break;

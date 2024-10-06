@@ -17,7 +17,8 @@ enum UnitType {
     TYPE_1_SOLDIER,
     TYPE_2_SOLDIER,
     TYPE_3_SOLDIER,
-    TANK
+    TANK,
+    BIT
 };
 
 // Struct for Unit
