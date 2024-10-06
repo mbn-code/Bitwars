@@ -137,10 +137,20 @@ void UpdateUnits(std::vector<Unit>& units, Base& opponentBase, std::vector<Unit>
     }
 
     // Remove dead units
+    /* 
+    @brief Remove units with health less than or equal to zero from the vector.
+
+    @param units The vector of units to remove dead units from.
+
+    @syntax for  [](const Unit& u)
+    @param u The unit to check for health less than or equal to zero.
+
+    @return void
+
+    */
     units.erase(std::remove_if(units.begin(), units.end(), [](const Unit& u) { return u.health <= 0; }), units.end());
 
 }
-
 
 void DrawHealthBar(const Unit& unit) {
     float healthBarWidth = unit.hitbox.width;
@@ -219,7 +229,7 @@ int main() {
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bitwars");
 
-    SetTargetFPS(60);
+    SetTargetFPS(120);
 
     Music backgroundMusic = InitAndPlayBackgroundMusic("assets/Sound/Default_Sound_Track.wav");
 
