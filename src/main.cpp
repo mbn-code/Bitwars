@@ -239,6 +239,7 @@ int main() {
         
         bool isOffensive = npcBase.health > playerBase.health;  // Go offensive if NPC base has more health
 
+        // logical switch case statements based on game logic and player input
         switch (currentState) {
             case START_SCREEN:
                 if (IsKeyPressed(KEY_ENTER)) {
@@ -282,6 +283,8 @@ int main() {
                     playerBase.points -= 2;
                 }
 
+
+                // NPC logic for buying units based on offensive or defensive mode and available points
                 if (isOffensive) {
                     // Offensive mode: NPC spawns more aggressive units
                     if (npcBase.points >= 50 && GetRandomValue(0, 100) < 10) {  // Higher chance to spawn tanks
@@ -322,6 +325,54 @@ int main() {
 
                 /* 
                 @brief Award points to both players over time
+                
+                @detail 
+                The pointTickCounter variable is used to keep track of the number of frames that have passed since the last point award.
+                The POINTS_INTERVAL constant is used to determine the number of frames that must pass before points are awarded.
+                The POINTS_PER_TICK constant is used to determine the number of points awarded to each player per tick.
+                The playerBase and npcBase points are incremented by POINTS_PER_TICK if the pointTickCounter is greater than or equal to POINTS_INTERVAL.
+
+                Basically every 60 frames (1 second), the player and NPC bases are awarded POINTS_PER_TICK points. Because when the pointTickCounter reaches 60, the points are awarded and the counter is reset to 0. This is done to prevent points from being awarded every frame, which would be too fast. This is a simple way to implement a time-based point award system.
+
+                @flow-chart
+                +----------------------------+
+                |   System Checkpoint Logic  |
+                +----------------------------+
+                            |
+                            V
+                +---------------------------+
+                |  Increment Tick Counter   |
+                +---------------------------+
+                            |
+                            V
+                +---------------------------+
+                |  Check if pointTickCounter|
+                |   >= POINTS_INTERVAL      |
+                +---------------------------+
+                            |
+                        +----+----+
+                        |         |
+                        | Yes     | No
+                        |         |
+                        V         |
+                +---------------------------+
+                |   Add POINTS_PER_TICK to  |
+                |   playerBase.points       |
+                |   Add POINTS_PER_TICK to  |
+                |   npcBase.points          |
+                +---------------------------+
+                            |
+                            V
+                +---------------------------+
+                |  Reset pointTickCounter to |
+                |           0               |
+                +---------------------------+
+                            |
+                            V
+                +---------------------------+
+                |       Repeat Every 60     |
+                |          Ticks (1 sec)    |
+                +---------------------------+
                 */
                 if (pointTickCounter >= POINTS_INTERVAL) {
                     playerBase.points += POINTS_PER_TICK;
@@ -370,12 +421,12 @@ int main() {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
+        // Draw game elements based on the current state. Seperated from the switch case above for better readability.
+        // And everything here is pretty straight forward.
         switch (currentState) {
             case START_SCREEN:
                 DrawText("Welcome to Bitwars!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 20, 20, BLACK);
-                
                 DrawText("Press ENTER to start", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 20, 20, DARKGRAY);
-
                 break;
 
             case GAMEPLAY:
@@ -409,16 +460,11 @@ int main() {
                     winTime = elapsedTime; // Capture the win time
                     WriteLastScore(winTime); // Write score only when game is won
                 }
-            
             break;
-
-            
             }
-
         EndDrawing();
-
     }
-
     CloseWindow();
+    
     return 0;
 }
