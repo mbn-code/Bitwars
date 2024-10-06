@@ -90,7 +90,10 @@ void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unitType, bool isP
 }
 
 void UpdateUnits(std::vector<Unit>& units, Base& opponentBase, std::vector<Unit>& opponentUnits) {
-    for (auto& unit : units) {
+    auto it = units.begin();
+    while (it != units.end()) {
+        auto& unit = *it;
+
         // Move units towards the opponent base
         if (unit.isPlayerUnit) {
             unit.hitbox.x += unit.speed;  // Move right
@@ -107,50 +110,42 @@ void UpdateUnits(std::vector<Unit>& units, Base& opponentBase, std::vector<Unit>
         // Check for collisions with opponent units
         for (auto& opponentUnit : opponentUnits) {
             if (CheckCollisionRecs(unit.hitbox, opponentUnit.hitbox)) {
-            // Inflict damage on both units
-            unit.health -= opponentUnit.damage;
-            opponentUnit.health -= unit.damage;
+                // Inflict damage on both units
+                unit.health -= opponentUnit.damage;
+                opponentUnit.health -= unit.damage;
 
-            // If either unit's health is less than or equal to zero, they are removed
-            if (unit.health <= 0) {
-                unit.health = 0; // Ensure health doesn't go negative
-                if (opponentUnit.type != BIT) {  // Skip awarding points if the opponent unit is a BIT
-                if (opponentUnit.type == TANK) {
-                    opponentBase.points += 10;  // Award points to the opponent for killing a player unit
-                } else {
-                    opponentBase.points += 5;  // Award points to the opponent for killing a player unit
+                // If either unit's health is less than or equal to zero, they are removed
+                if (unit.health <= 0) {
+                    unit.health = 0;  // Ensure health doesn't go negative
+                    if (opponentUnit.type != BIT) {  // Skip awarding points if the opponent unit is a BIT
+                        if (opponentUnit.type == TANK) {
+                            opponentBase.points += 10;  // Award points to the opponent for killing a player unit
+                        } else {
+                            opponentBase.points += 5;  // Award points to the opponent for killing a player unit
+                        }
+                    }
                 }
-                }
-            }
 
-            if (opponentUnit.health <= 0) {
-                opponentUnit.health = 0; // Ensure health doesn't go negative
-                if (unit.type != BIT) {  // Skip awarding points if the unit is a BIT
-                if (unit.type == TANK) {
-                    playerBase.points += 10;  // Award points to the player for killing an opponent unit
-                } else {
-                    playerBase.points += 5;  // Award points to the player for killing an opponent unit
+                if (opponentUnit.health <= 0) {
+                    opponentUnit.health = 0;  // Ensure health doesn't go negative
+                    if (unit.type != BIT) {  // Skip awarding points if the unit is a BIT
+                        if (unit.type == TANK) {
+                            playerBase.points += 10;  // Award points to the player for killing an opponent unit
+                        } else {
+                            playerBase.points += 5;  // Award points to the player for killing an opponent unit
+                        }
+                    }
                 }
-                }
-            }
             }
         }
+
+        // Remove dead units directly in the loop
+        if (unit.health <= 0) {
+            it = units.erase(it);
+        } else {
+            ++it;
+        }
     }
-
-    // Remove dead units
-    /* 
-    @brief Remove units with health less than or equal to zero from the vector.
-
-    @param units The vector of units to remove dead units from.
-
-    @syntax for  [](const Unit& u)
-    @param u The unit to check for health less than or equal to zero.
-
-    @return void
-
-    */
-    units.erase(std::remove_if(units.begin(), units.end(), [](const Unit& u) { return u.health <= 0; }), units.end());
-
 }
 
 void DrawHealthBar(const Unit& unit) {

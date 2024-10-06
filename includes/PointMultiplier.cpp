@@ -1,6 +1,7 @@
 #include "PointMultiplier.hpp"
+#include <cmath>
 
 float PointMultiplier::CalculatePointMultiplier(int health) {
-    // Example implementation
-    return static_cast<float>(health) / 100.0f;
+    // Exponential implementation
+    return std::exp((100 - health) / 100.0f);
 }
