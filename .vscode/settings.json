@@ -1,0 +1,7 @@
+{
+    "cmake.sourceDirectory": "/Users/mbn/Documents/Programmering/c++/horror/horror",
+    "files.associations": {
+        "screens.h": "c",
+        "vector": "cpp"
+    }
+}
