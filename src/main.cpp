@@ -3,6 +3,7 @@
 // Constants
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 800
+#define FRAME_RATE 60
 
 #define PLAYER_BASE_HEALTH 100
 #define NPC_BASE_HEALTH 100
@@ -229,7 +230,7 @@ int main() {
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bitwars");
 
-    SetTargetFPS(120);
+    SetTargetFPS(FRAME_RATE);
 
     Music backgroundMusic = InitAndPlayBackgroundMusic("assets/Sound/Default_Sound_Track.wav");
 
