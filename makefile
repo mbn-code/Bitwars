@@ -25,7 +25,7 @@ ifeq ($(PLATFORM), windows)
 else ifeq ($(PLATFORM), macos)
     # macOS-specific settings
     COMPILER = clang++
-    PLATFORM_OPTS = -Llib/macos -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL lib/macos/libraylib.a
+    PLATFORM_OPTS = -Llib -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL lib/libraylib.a
     OUT_FILE = $(MACOS_OUT)
     RM = rm -f
 endif
