@@ -1,4 +1,3 @@
-
 # 🎮 War Simulation Game
 
 This is a simple war simulation game developed using C++ and the Raylib library. The game features player and NPC bases, unit spawning, and combat mechanics.
