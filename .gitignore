@@ -9,7 +9,6 @@ build_osx
 *.dylib
 *.lib
 
-
 # Ignore temporary files
 *.tmp
 *.log
@@ -33,3 +32,24 @@ build_osx
 # Ignore OS specific files
 .DS_Store
 Thumbs.db
+
+# Visual Studio specific files
+.vscode/
+.vs/
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sln
+*.suo
+*.user
+*.userosscache
+*.userprefs
+*.ncb
+*.sdf
+*.opensdf
+*.sln.docstates
+ipch/
+*.aps
+*.pch
+*.vspscc
+*.vssscc

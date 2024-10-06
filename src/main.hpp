@@ -7,13 +7,25 @@
 #include <iostream>
 #include <algorithm>  // For std::remove_if
 
-// Game logic includes
+// Platform-specific includes for game logic and Raylib
+#ifdef _WIN32  // Windows-specific includes
+#include "../includes/PointMultiplier.hpp"
+#include "../includes/GameDataStructures.hpp"
+#include "../includes/HandleCombat.hpp"
+#include "../includes/HandleHighScore.hpp"
+#include "../lib/raylib.h"
+#elif __APPLE__  // macOS-specific includes
 #include "includes/PointMultiplier.hpp"
 #include "includes/GameDataStructures.hpp"
 #include "includes/HandleCombat.hpp"
 #include "includes/HandleHighScore.hpp"
-
-// raylib for graphics
+#include "../lib/macos_arm/raylib.h"
+#else  // Fallback for other platforms
+#include "includes/PointMultiplier.hpp"
+#include "includes/GameDataStructures.hpp"
+#include "includes/HandleCombat.hpp"
+#include "includes/HandleHighScore.hpp"
 #include "raylib.h"
+#endif
 
 #endif // MAIN_HPP
