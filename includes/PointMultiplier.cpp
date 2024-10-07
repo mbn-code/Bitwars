@@ -1,5 +1,4 @@
 #include "PointMultiplier.hpp"
-#include <cmath>
 
 float PointMultiplier::CalculatePointMultiplier(int health) {
     // Linear inverse implementation for higher multiplier with lower health

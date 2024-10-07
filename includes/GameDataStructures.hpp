@@ -1,7 +1,13 @@
 #ifndef GAMEDATASTRUCTURES_HPP
 #define GAMEDATASTRUCTURES_HPP
 
-#include <raylib.h>
+#ifdef _WIN32
+#include "../lib/windows/raylib.h"
+#else
+#ifdef _APPLE_
+#include "raylib.h"
+#endif
+#endif // _APPLE_
 // raylib for rectangle simplification in structures
 
 // Define Game States

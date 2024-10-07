@@ -1,18 +1,5 @@
 #include "main.hpp"
 
-// Constants
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 800
-#define FRAME_RATE 60
-
-#define PLAYER_BASE_HEALTH 100
-#define NPC_BASE_HEALTH 100
-#define UNIT_SPEED 2.0f
-#define POINTS_PER_TICK 1
-#define POINTS_INTERVAL 60
-#define PLAYER_BASE_INITIAL_POINTS 50
-#define NPC_BASE_INITIAL_POINTS 50
-
 // Function Prototypes
 void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unitType, bool isPlayerUnit);
 void UpdateUnits(std::vector<Unit>& units, Base& opponentBase);
@@ -191,6 +178,8 @@ void DrawTimer(float elapsedTime) {
 
 int main() {
 
+	CheatChecker cheatChecker(&playerBase, &npcBase, &playerUnits, &npcUnits);
+
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bitwars");
 
     SetTargetFPS(FRAME_RATE);
@@ -198,6 +187,8 @@ int main() {
     Music backgroundMusic = InitAndPlayBackgroundMusic("assets/Sound/Default_Sound_Track.wav");
 
     while (!WindowShouldClose()) {
+
+        cheatChecker.MonitorForCheats();
 
         UpdateMusicStream(backgroundMusic);  // Update music stream
 
