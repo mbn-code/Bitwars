@@ -30,7 +30,7 @@ else ifeq ($(PLATFORM), macos)
     COMPILER = clang++
     # Anti-debugging and security flags for macOS
     CFLAGS = -O3 -s -fno-stack-protector -fvisibility=hidden -fvisibility-inlines-hidden \
-             -fno-rtti -fno-exceptions -mmacosx-version-min=10.9 \
+             -fno-rtti -fno-exceptions -mmacosx-version-min=15 \
              -Wl,-sectcreate,__RESTRICT,__restrict,/dev/null \
              -Wl,-dead_strip -Wl,-no_pie
     PLATFORM_OPTS = -Llib -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL -framework OpenAL -framework AudioToolbox lib/libraylib.a 

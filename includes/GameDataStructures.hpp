@@ -5,9 +5,12 @@
 #include "../lib/windows/raylib.h"
 #else
 #ifdef _APPLE_
-#include "raylib.h"
+#include <main.hpp>
+#include <raylib.h>
 #endif
 #endif // _APPLE_
+#include <raylib.h>
+
 // raylib for rectangle simplification in structures
 
 // Define Game States
