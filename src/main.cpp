@@ -90,9 +90,9 @@ void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unitType, bool isP
 }
 
 void UpdateUnits(std::vector<Unit>& units, Base& opponentBase, std::vector<Unit>& opponentUnits) {
-    auto it = units.begin();
-    while (it != units.end()) {
-        auto& unit = *it;
+    auto it = units.begin(); // Iterator to loop through units
+    while (it != units.end()) { 
+        auto& unit = *it; // Get reference to the current unit
 
         // Move units towards the opponent base
         if (unit.isPlayerUnit) {
@@ -119,9 +119,9 @@ void UpdateUnits(std::vector<Unit>& units, Base& opponentBase, std::vector<Unit>
                     unit.health = 0;  // Ensure health doesn't go negative
                     if (opponentUnit.type != BIT) {  // Skip awarding points if the opponent unit is a BIT
                         if (opponentUnit.type == TANK) {
-                            opponentBase.points += 10;  // Award points to the opponent for killing a player unit
+                            opponentBase.points += 12;  // Award points to the opponent for killing a player unit
                         } else {
-                            opponentBase.points += 5;  // Award points to the opponent for killing a player unit
+                            opponentBase.points += 6;  // Award points to the opponent for killing a player unit
                         }
                     }
                 }
@@ -130,9 +130,9 @@ void UpdateUnits(std::vector<Unit>& units, Base& opponentBase, std::vector<Unit>
                     opponentUnit.health = 0;  // Ensure health doesn't go negative
                     if (unit.type != BIT) {  // Skip awarding points if the unit is a BIT
                         if (unit.type == TANK) {
-                            playerBase.points += 10;  // Award points to the player for killing an opponent unit
+                            playerBase.points += 12;  // Award points to the player for killing an opponent unit
                         } else {
-                            playerBase.points += 5;  // Award points to the player for killing an opponent unit
+                            playerBase.points += 6;  // Award points to the player for killing an opponent unit
                         }
                     }
                 }

@@ -2,6 +2,6 @@
 #include <cmath>
 
 float PointMultiplier::CalculatePointMultiplier(int health) {
-    // Exponential implementation
-    return std::exp((100 - health) / 100.0f);
+    // Linear inverse implementation for higher multiplier with lower health
+    return 1.0f + (100 - health) / 100.0f;
 }
