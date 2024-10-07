@@ -23,19 +23,31 @@ enum UnitType {
 
 // Struct for Unit
 struct Unit {
-    Rectangle hitbox;  // Hitbox representing the unit
-    int health;        // Health of the unit
-    int damage;        // Damage the unit deals
-    UnitType type;     // Type of unit (Type 1, 2, 3, Tank)
-    float speed;       // Speed of the unit
-    bool isPlayerUnit; // True if the unit belongs to the player, false for NPC
+    Rectangle hitbox;
+    int health;
+    int damage;
+    UnitType type;
+    int speed;
+    bool isPlayerUnit;
+    
+
+    bool operator==(const Unit& other) const {
+        return this->hitbox.x == other.hitbox.x &&
+               this->hitbox.y == other.hitbox.y &&
+               this->hitbox.width == other.hitbox.width &&
+               this->hitbox.height == other.hitbox.height &&
+               this->health == other.health &&
+               this->damage == other.damage &&
+               this->type == other.type;
+    }
 };
 
 // Struct for Base
 struct Base {
-    Rectangle hitbox;  // Hitbox representing the base
-    int health;        // Health of the base
-    int points;        // Points the player or NPC has
+    Rectangle hitbox;
+    int health;
+    int points;
+    Vector2 position;
 };
 
 #endif // GAMEDATASTRUCTURES_HPP

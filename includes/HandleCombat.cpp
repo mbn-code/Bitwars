@@ -1,6 +1,41 @@
 #include "HandleCombat.hpp"
+#include <cmath>
+
+// Helper function to calculate the distance between two points
+float CalculateDistance(float x1, float y1, float x2, float y2) {
+    return std::sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+}
+
+// Move unit towards the target
+void HandleCombat::MoveUnitTowards(Unit& unit, const Vector2& target) {
+    // Calculate the direction vector
+    float dx = target.x - unit.hitbox.x;
+    float dy = target.y - unit.hitbox.y;
+    float distance = CalculateDistance(unit.hitbox.x, unit.hitbox.y, target.x, target.y);
+    
+    // Normalize the direction
+    if (distance > 0) {
+        dx /= distance;
+        dy /= distance;
+    }
+
+    // Move the unit
+    unit.hitbox.x += dx * UNIT_SPEED;
+    unit.hitbox.y += dy * UNIT_SPEED;
+}
 
 void HandleCombat::HandleGameCombat(std::vector<Unit>& playerUnits, std::vector<Unit>& npcUnits, Base& playerBase, Base& npcBase) {
+    // Move player units towards NPC base
+    for (auto& playerUnit : playerUnits) {
+        MoveUnitTowards(playerUnit, {npcBase.hitbox.x, npcBase.hitbox.y});
+    }
+
+    // Move NPC units towards player base
+    for (auto& npcUnit : npcUnits) {
+        MoveUnitTowards(npcUnit, {playerBase.hitbox.x, playerBase.hitbox.y});
+    }
+
+    // Check for collisions and apply damage
     for (auto& playerUnit : playerUnits) {
         for (auto& npcUnit : npcUnits) {
             if (CheckCollisionRecs(playerUnit.hitbox, npcUnit.hitbox)) {
@@ -20,20 +55,12 @@ void HandleCombat::HandleGameCombat(std::vector<Unit>& playerUnits, std::vector<
     }
 
     // Remove dead player units
-    for (auto it = playerUnits.begin(); it != playerUnits.end(); ) {
-        if (it->health <= 0) {
-            it = playerUnits.erase(it);
-        } else {
-            ++it;
-        }
-    }
+    playerUnits.erase(std::remove_if(playerUnits.begin(), playerUnits.end(),
+                                     [](const Unit& unit) { return unit.health <= 0; }),
+                      playerUnits.end());
 
     // Remove dead NPC units
-    for (auto it = npcUnits.begin(); it != npcUnits.end(); ) {
-        if (it->health <= 0) {
-            it = npcUnits.erase(it);
-        } else {
-            ++it;
-        }
-    }
+    npcUnits.erase(std::remove_if(npcUnits.begin(), npcUnits.end(),
+                                  [](const Unit& unit) { return unit.health <= 0; }),
+                   npcUnits.end());
 }

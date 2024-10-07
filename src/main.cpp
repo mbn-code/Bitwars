@@ -32,7 +32,7 @@ int pointTickCounter = 0;
 
 float elapsedTime = 0.0f;
 bool gameWon = false;
-bool winTime = 0.0f;
+float winTime = 0.0f;
 
 float lastScore = ReadLastScore();
 
@@ -89,62 +89,27 @@ void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unitType, bool isP
     units.push_back(newUnit);
 }
 
-void UpdateUnits(std::vector<Unit>& units, Base& opponentBase, std::vector<Unit>& opponentUnits) {
-    auto it = units.begin(); // Iterator to loop through units
-    while (it != units.end()) { 
-        auto& unit = *it; // Get reference to the current unit
+// Function Definitions
+void UpdateUnits(std::vector<Unit>& units, Base& opponentBase) {
+    for (auto& unit : units) {
+        // Move unit towards the opponent base
+        HandleCombat::MoveUnitTowards(unit, {opponentBase.hitbox.x, opponentBase.hitbox.y});
 
-        // Move units towards the opponent base
-        if (unit.isPlayerUnit) {
-            unit.hitbox.x += unit.speed;  // Move right
-        } else {
-            unit.hitbox.x -= unit.speed;  // Move left
-        }
-
-        // Check if the unit has reached the opponent's base
+        // Check if the unit has reached the opponent base
         if (CheckCollisionRecs(unit.hitbox, opponentBase.hitbox)) {
-            opponentBase.health -= unit.damage;  // Inflict damage to the base
-            unit.health = 0;  // Unit dies after attacking the base
+            // Deal damage to the opponent base
+            opponentBase.health -= unit.damage;
+
+            // Remove the unit
+            unit.health = 0;
         }
 
-        // Check for collisions with opponent units
-        for (auto& opponentUnit : opponentUnits) {
-            if (CheckCollisionRecs(unit.hitbox, opponentUnit.hitbox)) {
-                // Inflict damage on both units
-                unit.health -= opponentUnit.damage;
-                opponentUnit.health -= unit.damage;
-
-                // If either unit's health is less than or equal to zero, they are removed
-                if (unit.health <= 0) {
-                    unit.health = 0;  // Ensure health doesn't go negative
-                    if (opponentUnit.type != BIT) {  // Skip awarding points if the opponent unit is a BIT
-                        if (opponentUnit.type == TANK) {
-                            opponentBase.points += 12;  // Award points to the opponent for killing a player unit
-                        } else {
-                            opponentBase.points += 6;  // Award points to the opponent for killing a player unit
-                        }
-                    }
-                }
-
-                if (opponentUnit.health <= 0) {
-                    opponentUnit.health = 0;  // Ensure health doesn't go negative
-                    if (unit.type != BIT) {  // Skip awarding points if the unit is a BIT
-                        if (unit.type == TANK) {
-                            playerBase.points += 12;  // Award points to the player for killing an opponent unit
-                        } else {
-                            playerBase.points += 6;  // Award points to the player for killing an opponent unit
-                        }
-                    }
-                }
-            }
-        }
-
-        // Remove dead units directly in the loop
+        // Update unit health
         if (unit.health <= 0) {
-            it = units.erase(it);
-        } else {
-            ++it;
+            // Remove the unit if health is zero
+            units.erase(std::remove(units.begin(), units.end(), unit), units.end());
         }
+
     }
 }
 
@@ -374,16 +339,21 @@ int main() {
                 |          Ticks (1 sec)    |
                 +---------------------------+
                 */
+
+                // Update units and check collisions
+                HandleCombat::HandleGameCombat(playerUnits, npcUnits, playerBase, npcBase);
+                HandleCombat::HandleGameCombat(npcUnits, playerUnits, npcBase, playerBase);
+
+                // move the units towards the base 
+                UpdateUnits(playerUnits, npcBase);
+                UpdateUnits(npcUnits, playerBase);
+
+
                 if (pointTickCounter >= POINTS_INTERVAL) {
                     playerBase.points += POINTS_PER_TICK;
                     npcBase.points += POINTS_PER_TICK;
                     pointTickCounter = 0;
                 }
-
-
-                // Update units and check collisions
-                UpdateUnits(playerUnits, npcBase, npcUnits);
-                UpdateUnits(npcUnits, playerBase, playerUnits);
 
                 // Check if any base is destroyed
                 /* 
@@ -464,6 +434,8 @@ int main() {
             }
         EndDrawing();
     }
+    UnloadMusicStream(backgroundMusic);
+    CloseAudioDevice();
     CloseWindow();
     
     return 0;
