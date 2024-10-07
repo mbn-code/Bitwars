@@ -91,8 +91,9 @@ void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unitType, bool isP
 
 // Function Definitions
 void UpdateUnits(std::vector<Unit>& units, Base& opponentBase) {
-    for (auto& unit : units) {
-        // Move unit towards the opponent base
+    for (auto it = units.begin(); it != units.end(); ) {
+        Unit& unit = *it;
+    	// Move unit towards the opponent base
         HandleCombat::MoveUnitTowards(unit, {opponentBase.hitbox.x, opponentBase.hitbox.y});
 
         // Check if the unit has reached the opponent base
@@ -106,8 +107,10 @@ void UpdateUnits(std::vector<Unit>& units, Base& opponentBase) {
 
         // Update unit health
         if (unit.health <= 0) {
-            // Remove the unit if health is zero
-            units.erase(std::remove(units.begin(), units.end(), unit), units.end());
+            it = units.erase(it); // Correctly erase the unit
+        }
+        else {
+            ++it;
         }
 
     }

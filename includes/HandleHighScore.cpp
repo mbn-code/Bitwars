@@ -1,6 +1,5 @@
 #include <fstream>
 #include <iostream>
-#include <string>
 
 float ReadLastScore() {
     std::ifstream file("last_score.txt");

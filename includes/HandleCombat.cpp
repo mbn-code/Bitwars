@@ -1,5 +1,6 @@
 #include "HandleCombat.hpp"
 #include <cmath>
+#include <algorithm>
 
 // Helper function to calculate the distance between two points
 float CalculateDistance(float x1, float y1, float x2, float y2) {
@@ -10,18 +11,15 @@ float CalculateDistance(float x1, float y1, float x2, float y2) {
 void HandleCombat::MoveUnitTowards(Unit& unit, const Vector2& target) {
     // Calculate the direction vector
     float dx = target.x - unit.hitbox.x;
-    float dy = target.y - unit.hitbox.y;
     float distance = CalculateDistance(unit.hitbox.x, unit.hitbox.y, target.x, target.y);
     
     // Normalize the direction
     if (distance > 0) {
         dx /= distance;
-        dy /= distance;
     }
 
     // Move the unit
     unit.hitbox.x += dx * UNIT_SPEED;
-    unit.hitbox.y += dy * UNIT_SPEED;
 }
 
 void HandleCombat::HandleGameCombat(std::vector<Unit>& playerUnits, std::vector<Unit>& npcUnits, Base& playerBase, Base& npcBase) {

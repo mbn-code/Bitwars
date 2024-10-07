@@ -4,6 +4,14 @@
 #include <vector>
 #include "GameDataStructures.hpp"
 
+#ifdef _WIN32
+#include "../lib/windows/raylib.h"
+#else
+#ifdef _APPLE_
+#include "raylib.h"
+#endif
+#endif // _APPLE_
+
 #define UNIT_SPEED 2.0f
 
 void UpdateUnits(std::vector<Unit>& units, Base& opponentBase);
