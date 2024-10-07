@@ -9,8 +9,8 @@ STD = -std=c++11
 SOURCE_LIBS = -Ilib/ -Iincludes
 
 # Output binaries
-WIN_OUT = -o "bin/build_windows.exe"
-MACOS_OUT = -o "bin/build_osx"
+WIN_OUT = -o "bin/Bitwars.exe"
+MACOS_OUT = -o "bin/Bitwars"
 
 # Source files
 CFILES = src/*.cpp includes/HandleCombat.cpp includes/PointMultiplier.cpp includes/HandleHighScore.cpp includes/CheatChecker.cpp
@@ -33,7 +33,7 @@ else ifeq ($(PLATFORM), macos)
              -fno-rtti -fno-exceptions -mmacosx-version-min=10.9 \
              -Wl,-sectcreate,__RESTRICT,__restrict,/dev/null \
              -Wl,-dead_strip -Wl,-no_pie
-    PLATFORM_OPTS = -Llib -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL -framework OpenAL -framework AudioToolbox lib/libraylib.a
+    PLATFORM_OPTS = -Llib -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL -framework OpenAL -framework AudioToolbox lib/libraylib.a 
     OUT_FILE = $(MACOS_OUT)
     RM = rm -f
 endif
@@ -47,5 +47,5 @@ build:
 
 # Clean up generated binaries
 clean:
-	$(RM) bin/build_windows.exe bin/build_osx
+	$(RM) bin/Bitwars.exe bin/Bitwars
 
