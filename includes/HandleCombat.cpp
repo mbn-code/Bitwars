@@ -1,5 +1,4 @@
 #include "HandleCombat.hpp"
-#include <algorithm>  // For std::remove_if
 
 void HandleCombat::HandleGameCombat(std::vector<Unit>& playerUnits, std::vector<Unit>& npcUnits, Base& playerBase, Base& npcBase) {
     for (auto& playerUnit : playerUnits) {
@@ -20,7 +19,21 @@ void HandleCombat::HandleGameCombat(std::vector<Unit>& playerUnits, std::vector<
         }
     }
 
-    // Remove dead units
-    playerUnits.erase(std::remove_if(playerUnits.begin(), playerUnits.end(), [](const Unit& u) { return u.health <= 0; }), playerUnits.end());
-    npcUnits.erase(std::remove_if(npcUnits.begin(), npcUnits.end(), [](const Unit& u) { return u.health <= 0; }), npcUnits.end());
+    // Remove dead player units
+    for (auto it = playerUnits.begin(); it != playerUnits.end(); ) {
+        if (it->health <= 0) {
+            it = playerUnits.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // Remove dead NPC units
+    for (auto it = npcUnits.begin(); it != npcUnits.end(); ) {
+        if (it->health <= 0) {
+            it = npcUnits.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
