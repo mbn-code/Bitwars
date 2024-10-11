@@ -28,9 +28,25 @@ void HandleCombat::HandleGameCombat(std::vector<Unit>& playerUnits, std::vector<
         MoveUnitTowards(playerUnit, {npcBase.hitbox.x, npcBase.hitbox.y});
     }
 
-    // Move NPC units towards player base
+    // Move NPC units towards the nearest player unit or player base
     for (auto& npcUnit : npcUnits) {
-        MoveUnitTowards(npcUnit, {playerBase.hitbox.x, playerBase.hitbox.y});
+        if (!playerUnits.empty()) {
+            // Find the nearest player unit
+            Unit* nearestPlayerUnit = nullptr;
+            float minDistance = std::numeric_limits<float>::max();
+            for (auto& playerUnit : playerUnits) {
+                float distance = CalculateDistance(npcUnit.hitbox.x, npcUnit.hitbox.y, playerUnit.hitbox.x, playerUnit.hitbox.y);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestPlayerUnit = &playerUnit;
+                }
+            }
+            if (nearestPlayerUnit) {
+                MoveUnitTowards(npcUnit, {nearestPlayerUnit->hitbox.x, nearestPlayerUnit->hitbox.y});
+            }
+        } else {
+            MoveUnitTowards(npcUnit, {playerBase.hitbox.x, playerBase.hitbox.y});
+        }
     }
 
     // Check for collisions and apply damage

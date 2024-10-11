@@ -166,7 +166,7 @@ void DrawImprovedUI(const Base& playerBase, const Base& npcBase) {
 
     DrawText("Unit Purchase Options:", 20, SCREEN_HEIGHT - 200, 20, BLACK);
     DrawText("[1] Type 1 Soldier - 5 Points", 20, SCREEN_HEIGHT - 170, 20, BLACK);
-    DrawText("[2] Type 2 Soldier - 10 Points", 20, SCREEN_HEIGHT - 140, 20, BLACK);
+    DrawText("[2] Type 2 Soldier - 15 Points", 20, SCREEN_HEIGHT - 140, 20, BLACK);  
     DrawText("[3] Type 3 Soldier - 30 Points", 20, SCREEN_HEIGHT - 110, 20, BLACK);
     DrawText("[4] Tank - 50 Points", 20, SCREEN_HEIGHT - 80, 20, BLACK);
     DrawText("[5] Bit - 2 Points", 20, SCREEN_HEIGHT - 50, 20, BLACK);
@@ -276,42 +276,42 @@ int main() {
                 }
 
 
-                // NPC logic for buying units based on offensive or defensive mode and available points
+                // NPC logic for buying units based on player's actions and available points
                 if (isOffensive) {
                     // Offensive mode: NPC spawns more aggressive units
-                    if (npcBase.points >= 50 && GetRandomValue(0, 100) < 10) {  // Higher chance to spawn tanks
+                    if (playerUnits.size() > npcUnits.size() && npcBase.points >= 50) {  // If player has more units, spawn tanks
                         SpawnUnit(npcUnits, npcBase, TANK, false);
                         npcBase.points -= 50;
-                    } else if (npcBase.points >= 30 && GetRandomValue(0, 100) < 20) {  // Chance to spawn Type 3 soldiers
+                    } else if (playerUnits.size() > npcUnits.size() && npcBase.points >= 30) {  // If player has more units, spawn Type 3 soldiers
                         SpawnUnit(npcUnits, npcBase, TYPE_3_SOLDIER, false);
                         npcBase.points -= 30;
-                    } else if (npcBase.points >= 10 && GetRandomValue(0, 100) < 30) {  // Chance to spawn Type 2 soldiers
+                    } else if (npcBase.points >= 10) {  // Default to spawning Type 2 soldiers
                         SpawnUnit(npcUnits, npcBase, TYPE_2_SOLDIER, false);
                         npcBase.points -= 10;
-                    } else if (npcBase.points >= 5 && GetRandomValue(0, 100) < 40) {  // Chance to spawn Type 1 soldiers
+                    } else if (npcBase.points >= 5) {  // Default to spawning Type 1 soldiers
                         SpawnUnit(npcUnits, npcBase, TYPE_1_SOLDIER, false);
                         npcBase.points -= 5;
-                    } else if (npcBase.points >= 12 && GetRandomValue(0, 100) < 50) {  // Chance to spawn Bits
+                    } else if (npcBase.points >= 2) {  // Default to spawning Bits
                         SpawnUnit(npcUnits, npcBase, BIT, false);
-                        npcBase.points -= 12;
+                        npcBase.points -= 2;
                     }
                 } else {
-                    // Defensive mode: NPC spawns units less frequently but focuses on stronger units
-                    if (npcBase.points >= 50 && GetRandomValue(0, 100) < 5) {  // Lower chance to spawn tanks
+                    // Defensive mode: NPC spawns units based on player's unit types
+                    if (std::count_if(playerUnits.begin(), playerUnits.end(), [](const Unit& unit) { return unit.type == TANK; }) > 0 && npcBase.points >= 50) {  // If player has tanks, spawn tanks
                         SpawnUnit(npcUnits, npcBase, TANK, false);
                         npcBase.points -= 50;
-                    } else if (npcBase.points >= 30 && GetRandomValue(0, 100) < 10) {  // Chance to spawn Type 3 soldiers
+                    } else if (std::count_if(playerUnits.begin(), playerUnits.end(), [](const Unit& unit) { return unit.type == TYPE_3_SOLDIER; }) > 0 && npcBase.points >= 30) {  // If player has Type 3 soldiers, spawn Type 3 soldiers
                         SpawnUnit(npcUnits, npcBase, TYPE_3_SOLDIER, false);
                         npcBase.points -= 30;
-                    } else if (npcBase.points >= 10 && GetRandomValue(0, 100) < 15) {  // Chance to spawn Type 2 soldiers
+                    } else if (npcBase.points >= 10) {  // Default to spawning Type 2 soldiers
                         SpawnUnit(npcUnits, npcBase, TYPE_2_SOLDIER, false);
                         npcBase.points -= 10;
-                    } else if (npcBase.points >= 5 && GetRandomValue(0, 100) < 20) {  // Chance to spawn Type 1 soldiers
+                    } else if (npcBase.points >= 5) {  // Default to spawning Type 1 soldiers
                         SpawnUnit(npcUnits, npcBase, TYPE_1_SOLDIER, false);
                         npcBase.points -= 5;
-                    } else if (npcBase.points >= 12 && GetRandomValue(0, 100) < 25) {  // Chance to spawn Bits
+                    } else if (npcBase.points >= 2) {  // Default to spawning Bits
                         SpawnUnit(npcUnits, npcBase, BIT, false);
-                        npcBase.points -= 12;
+                        npcBase.points -= 2;
                     }
                 }
 

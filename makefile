@@ -2,7 +2,13 @@
 PLATFORM ?= macos
 
 # Compiler definitions
-COMPILER = g++
+# Change the default compiler to the MinGW-w64 compiler for Windows
+ifeq ($(PLATFORM), windows)
+    COMPILER = x86_64-w64-mingw32-g++
+else
+    COMPILER = g++
+endif
+
 STD = -std=c++11
 
 # Include paths for headers and Raylib
@@ -18,21 +24,17 @@ CFILES = src/*.cpp includes/HandleCombat.cpp includes/PointMultiplier.cpp includ
 # Platform-specific compiler and linker options
 ifeq ($(PLATFORM), windows)
     # Windows-specific settings
-    COMPILER = g++
-    # Anti-debugging and security flags for Windows
     CFLAGS = -O3 -s -fno-stack-protector -fvisibility=hidden -fvisibility-inlines-hidden \
-             -fno-rtti -fno-exceptions -mwindows -Wl,--no-insert-timestamp
-    PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm -static -static-libgcc -static-libstdc++ -lwinmm -lole32 -ldsound
+             -fno-rtti -fno-exceptions
+    PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm -static -static-libgcc -static-libstdc++ -lole32 -ldsound
     OUT_FILE = $(WIN_OUT)
     RM = del /f /q
 else ifeq ($(PLATFORM), macos)
     # macOS-specific settings
-    COMPILER = clang++
-    # Anti-debugging and security flags for macOS
-    CFLAGS = -O3 -s -fno-stack-protector -fvisibility=hidden -fvisibility-inlines-hidden \
+    CFLAGS = -O3 -fno-stack-protector -fvisibility=hidden -fvisibility-inlines-hidden \
              -fno-rtti -fno-exceptions -mmacosx-version-min=15 \
              -Wl,-sectcreate,__RESTRICT,__restrict,/dev/null \
-             -Wl,-dead_strip -Wl,-no_pie
+             -Wl,-dead_strip
     PLATFORM_OPTS = -Llib -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL -framework OpenAL -framework AudioToolbox lib/libraylib.a 
     OUT_FILE = $(MACOS_OUT)
     RM = rm -f
