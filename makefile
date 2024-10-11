@@ -9,7 +9,7 @@ else
     COMPILER = g++
 endif
 
-STD = -std=c++11
+STD = -std=c++17
 
 # Include paths for headers and Raylib
 SOURCE_LIBS = -Ilib/ -Iincludes
@@ -26,7 +26,7 @@ ifeq ($(PLATFORM), windows)
     # Windows-specific settings
     CFLAGS = -O3 -s -fno-stack-protector -fvisibility=hidden -fvisibility-inlines-hidden \
              -fno-rtti -fno-exceptions
-    PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm -static -static-libgcc -static-libstdc++ -lole32 -ldsound
+    PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm -static -static-libgcc -static-libstdc++ -lole32 -ldsound -mwindows
     OUT_FILE = $(WIN_OUT)
     RM = del /f /q
 else ifeq ($(PLATFORM), macos)

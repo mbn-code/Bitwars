@@ -27,6 +27,7 @@
 #include "../includes/CheatChecker.hpp"
 #include "../lib/windows/raylib.h"
 #include "../lib/windows/rlgl.h"
+#include <fstream>
 // Load rcore and rlgl here for textures to work on windows:
 // #include "../
 #include <algorithm>
