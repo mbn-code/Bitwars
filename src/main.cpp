@@ -188,22 +188,22 @@ int main() {
 
     SetTargetFPS(FRAME_RATE);
 
-    // Load textures
-    npcBase.texture = LoadTexture("assets/Images/Base_texture_BR.png");
+    // Load textures based on platform-specific paths
+    npcBase.texture = LoadTexture(BASE_TEXTURE_PATH);
     if (npcBase.texture.id == 0) {
-        std::cerr << "Failed to load player base texture! base 1" << std::endl;
+        std::cerr << "Failed to load NPC base texture! Path might be wrong." << std::endl;
         return -1;
     }
 
-    playerBase.texture = LoadTexture("assets/Images/Base2_texture_BR.png");
+    playerBase.texture = LoadTexture(BASE2_TEXTURE_PATH);
     if (playerBase.texture.id == 0) {
-        std::cerr << "Failed to load NPC base texture! base 2" << std::endl;
+        std::cerr << "Failed to load Player base texture! Path might be wrong." << std::endl;
         return -1;
     }
 
-    backgroundTexture = LoadTexture("assets/Images/background.png");
+    backgroundTexture = LoadTexture(BACKGROUND_TEXTURE_PATH);
     if (backgroundTexture.id == 0) {
-        std::cerr << "Failed to load background texture! background " << std::endl;
+        std::cerr << "Failed to load background texture! Path might be wrong." << std::endl;
         return -1;
     }
 
@@ -472,7 +472,7 @@ int main() {
     UnloadMusicStream(backgroundMusic);
     CloseAudioDevice();
     
-        // Unload textures
+    // Unload textures
     UnloadTexture(playerBase.texture);
     UnloadTexture(npcBase.texture);
     UnloadTexture(backgroundTexture);

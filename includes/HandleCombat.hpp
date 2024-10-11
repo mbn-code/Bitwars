@@ -6,6 +6,7 @@
 
 #ifdef _WIN32
 #include "../lib/windows/raylib.h"
+#include <limits>
 #else
 #ifdef _APPLE_
 #include "raylib.h"
