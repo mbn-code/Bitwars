@@ -20,11 +20,11 @@
 
 // Platform-specific includes for game logic and Raylib
 #ifdef _WIN32  // Windows-specific includes
-#include "../includes/PointMultiplier.hpp"
-#include "../includes/GameDataStructures.hpp"
-#include "../includes/HandleCombat.hpp"
-#include "../includes/HandleHighScore.hpp"
-#include "../includes/CheatChecker.hpp"
+#include "../includes/game_logic/PointMultiplier.hpp"
+#include "../includes/game_logic/GameDataStructures.hpp"
+#include "../includes/game_logic/HandleCombat.hpp"
+#include "../includes/game_logic/HandleHighScore.hpp"
+#include "../includes/game_logic/CheatChecker.hpp"
 #include "../lib/windows/raylib.h"
 #include "../lib/windows/rlgl.h"
 #include <fstream>
@@ -32,11 +32,11 @@
 // #include "../
 #include <algorithm>
 #elif __APPLE__  // macOS-specific includes
-#include "../includes/PointMultiplier.hpp"
-#include "../includes/GameDataStructures.hpp"
-#include "../includes/HandleCombat.hpp"
-#include "../includes/HandleHighScore.hpp"
-#include "../includes/CheatChecker.hpp"
+#include "../includes/game_logic/PointMultiplier.hpp"
+#include "../includes/game_logic/GameDataStructures.hpp"
+#include "../includes/game_logic/HandleCombat.hpp"
+#include "../includes/game_logic/HandleHighScore.hpp"
+#include "../includes/cheat_detection/CheatChecker.hpp"
 #include "../lib/raylib.h"
 #else  // Fallback for other platforms
 #include "../includes/PointMultiplier.hpp"

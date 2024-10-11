@@ -19,7 +19,7 @@ WIN_OUT = -o "bin/Bitwars.exe"
 MACOS_OUT = -o "bin/Bitwars"
 
 # Source files
-CFILES = src/*.cpp includes/HandleCombat.cpp includes/PointMultiplier.cpp includes/HandleHighScore.cpp includes/CheatChecker.cpp
+CFILES = src/*.cpp includes/game_logic/HandleCombat.cpp includes/game_logic/PointMultiplier.cpp includes/game_logic/HandleHighScore.cpp includes/cheat_detection/CheatChecker.cpp
 
 # Platform-specific compiler and linker options
 ifeq ($(PLATFORM), windows)

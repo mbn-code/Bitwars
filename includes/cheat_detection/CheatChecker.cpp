@@ -1,5 +1,5 @@
 #include "CheatChecker.hpp"
-#include "Constants.hpp"
+#include "game_logic/Constants.hpp"
 #include <iostream>
 
 // Constructor with initialization of last points

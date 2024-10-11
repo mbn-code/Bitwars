@@ -1,7 +1,7 @@
 #ifndef CHEATCHECKER_HPP
 #define CHEATCHECKER_HPP
 
-#include "GameDataStructures.hpp"  // Include the file where Base and Unit are defined
+#include "../game_logic/GameDataStructures.hpp"  // Include the file where Base and Unit are defined
 #include <vector>
 
 // Define the CheatChecker class
