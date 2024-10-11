@@ -166,7 +166,7 @@ void DrawImprovedUI(const Base& playerBase, const Base& npcBase) {
 
     DrawText("Unit Purchase Options:", 20, SCREEN_HEIGHT - 200, 20, BLACK);
     DrawText("[1] Type 1 Soldier - 5 Points", 20, SCREEN_HEIGHT - 170, 20, BLACK);
-    DrawText("[2] Type 2 Soldier - 15 Points", 20, SCREEN_HEIGHT - 140, 20, BLACK);  
+    DrawText("[2] Type 2 Soldier - 10 Points", 20, SCREEN_HEIGHT - 140, 20, BLACK);  
     DrawText("[3] Type 3 Soldier - 30 Points", 20, SCREEN_HEIGHT - 110, 20, BLACK);
     DrawText("[4] Tank - 50 Points", 20, SCREEN_HEIGHT - 80, 20, BLACK);
     DrawText("[5] Bit - 2 Points", 20, SCREEN_HEIGHT - 50, 20, BLACK);
