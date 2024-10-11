@@ -48,7 +48,7 @@ bool is_first_time() {
 }
 
 // Function Implementations             // base can't be const because it's health is being modified in the function
-void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unit_type, bool is_player_unit) {
+void spawn_unit(std::vector<Unit>& units, Base& base, UnitType unit_type, bool is_player_unit) {
     Unit newUnit;
     newUnit.type = unit_type;
     newUnit.isPlayerUnit = is_player_unit;
@@ -151,15 +151,15 @@ void draw_health_bar(const Unit& unit) {
 }
 
 
-void DrawBit(const Unit& unit) {
+void draw_bit(const Unit& unit) {
     // Implement drawing logic for bits
-    DrawRectangle(unit.hitbox.x, unit.hitbox.y, 5, 5, unit.isPlayerUnit ? BLUE : RED);
+    DrawRectangle(static_cast<int>(unit.hitbox.x), static_cast<int>(unit.hitbox.y), 5, 5, unit.isPlayerUnit ? BLUE : RED);
 }
 
-void DrawUnits(const std::vector<Unit>& units) {
+void draw_units(const std::vector<Unit>& units) {
     for (const auto& unit : units) {
         if (unit.type == BIT) {
-            DrawBit(unit);
+            draw_bit(unit);
         } else {
             DrawRectangle(unit.hitbox.x, unit.hitbox.y, unit.hitbox.width, unit.hitbox.height, unit.isPlayerUnit ? BLUE : RED);
             draw_health_bar(unit);
@@ -290,23 +290,23 @@ int main() {
 
                 // Player input for buying units
                 if (IsKeyPressed(KEY_ONE) && player_base.points >= 5) {
-                    SpawnUnit(player_units, player_base, TYPE_1_SOLDIER, true);
+                    spawn_unit(player_units, player_base, TYPE_1_SOLDIER, true);
                     player_base.points -= 5;
                 }
                 if (IsKeyPressed(KEY_TWO) && player_base.points >= 10) {
-                    SpawnUnit(player_units, player_base, TYPE_2_SOLDIER, true);
+                    spawn_unit(player_units, player_base, TYPE_2_SOLDIER, true);
                     player_base.points -= 10;
                 }
                 if (IsKeyPressed(KEY_THREE) && player_base.points >= 30) {
-                    SpawnUnit(player_units, player_base, TYPE_3_SOLDIER, true);
+                    spawn_unit(player_units, player_base, TYPE_3_SOLDIER, true);
                     player_base.points -= 30;
                 }
                 if (IsKeyPressed(KEY_FOUR) && player_base.points >= 50) {
-                    SpawnUnit(player_units, player_base, TANK, true);
+                    spawn_unit(player_units, player_base, TANK, true);
                     player_base.points -= 50;
                 }
                 if (IsKeyPressed(KEY_FIVE) && player_base.points >= 2) {
-                    SpawnUnit(player_units, player_base, BIT, true);
+                    spawn_unit(player_units, player_base, BIT, true);
                     player_base.points -= 2;
                 }
 
@@ -315,37 +315,37 @@ int main() {
                 if (isOffensive) {
                     // Offensive mode: NPC spawns more aggressive units
                     if (player_units.size() > npc_units.size() && npc_base.points >= 50) {  // If player has more units, spawn tanks
-                        SpawnUnit(npc_units, npc_base, TANK, false);
+                        spawn_unit(npc_units, npc_base, TANK, false);
                         npc_base.points -= 50;
                     } else if (player_units.size() > npc_units.size() && npc_base.points >= 30) {  // If player has more units, spawn Type 3 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_3_SOLDIER, false);
+                        spawn_unit(npc_units, npc_base, TYPE_3_SOLDIER, false);
                         npc_base.points -= 30;
                     } else if (npc_base.points >= 10) {  // Default to spawning Type 2 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_2_SOLDIER, false);
+                        spawn_unit(npc_units, npc_base, TYPE_2_SOLDIER, false);
                         npc_base.points -= 10;
                     } else if (npc_base.points >= 5) {  // Default to spawning Type 1 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_1_SOLDIER, false);
+                        spawn_unit(npc_units, npc_base, TYPE_1_SOLDIER, false);
                         npc_base.points -= 5;
                     } else if (npc_base.points >= 2) {  // Default to spawning Bits
-                        SpawnUnit(npc_units, npc_base, BIT, false);
+                        spawn_unit(npc_units, npc_base, BIT, false);
                         npc_base.points -= 2;
                     }
                 } else {
                     // Defensive mode: NPC spawns units based on player's unit types
                     if (std::count_if(player_units.begin(), player_units.end(), [](const Unit& unit) { return unit.type == TANK; }) > 0 && npc_base.points >= 50) {  // If player has tanks, spawn tanks
-                        SpawnUnit(npc_units, npc_base, TANK, false);
+                        spawn_unit(npc_units, npc_base, TANK, false);
                         npc_base.points -= 50;
                     } else if (std::count_if(player_units.begin(), player_units.end(), [](const Unit& unit) { return unit.type == TYPE_3_SOLDIER; }) > 0 && npc_base.points >= 30) {  // If player has Type 3 soldiers, spawn Type 3 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_3_SOLDIER, false);
+                        spawn_unit(npc_units, npc_base, TYPE_3_SOLDIER, false);
                         npc_base.points -= 30;
                     } else if (npc_base.points >= 10) {  // Default to spawning Type 2 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_2_SOLDIER, false);
+                        spawn_unit(npc_units, npc_base, TYPE_2_SOLDIER, false);
                         npc_base.points -= 10;
                     } else if (npc_base.points >= 5) {  // Default to spawning Type 1 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_1_SOLDIER, false);
+                        spawn_unit(npc_units, npc_base, TYPE_1_SOLDIER, false);
                         npc_base.points -= 5;
                     } else if (npc_base.points >= 2) {  // Default to spawning Bits
-                        SpawnUnit(npc_units, npc_base, BIT, false);
+                        spawn_unit(npc_units, npc_base, BIT, false);
                         npc_base.points -= 2;
                     }
                 }
@@ -467,16 +467,29 @@ int main() {
 	            DrawText("Welcome to Bitwars!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 20, 20, BLACK);
 	            DrawText("Press ENTER to start", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 20, 20, BLACK);
 
+				if (!first_time) {
+        			DrawText("*Hold P to show controls again", SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 + 40, 20, BLACK);
+					
+				}
+
 	            // If it's the first time, show the tutorial
-	            if (first_time) {
-	                DrawText("Controls:", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 60, 20, BLACK);
-	                DrawText("WASD - Move", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 80, 20, BLACK);
-	                DrawText("Mouse - Aim", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 100, 20, BLACK);
-	                DrawText("Left Click - Shoot", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 120, 20, BLACK);
-	                DrawText("Description:", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 160, 20, BLACK);
-	                DrawText("Bitwars is a strategy game where you control units", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 180, 20, BLACK);
-	                DrawText("to defeat the enemy base. Use your resources wisely", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 200, 20, BLACK);
-	                DrawText("and outsmart your opponent!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 220, 20, BLACK);
+	            if (first_time || IsKeyDown(KEY_P)) {
+                    // Define the box dimensions and position
+                    int boxX = 500; // X position of the box
+                    int boxY = SCREEN_HEIGHT - 220; // Y position of the box (near the bottom)
+                    int boxWidth = SCREEN_WIDTH / 2; // Width of the box
+                    int boxHeight = 250; // Height of the box
+
+                    // Draw the light gray box
+                    DrawRectangle(boxX, boxY, boxWidth, boxHeight, LIGHTGRAY);
+
+                    // Draw the text within the box
+                    DrawText("Controls:", SCREEN_WIDTH / 2 - 100, boxY + 20, 20, BLACK);
+                    DrawText("Key 1 through 5 - Send Units", SCREEN_WIDTH / 2 - 100, boxY + 40, 20, BLACK);
+                    DrawText("Description:", SCREEN_WIDTH / 2 - 100, boxY + 120, 20, BLACK);
+                    DrawText("Bitwars is a strategy game where you control units", SCREEN_WIDTH / 2 - 100, boxY + 140, 20, BLACK);
+                    DrawText("to defeat the enemy base. Use your resources wisely", SCREEN_WIDTH / 2 - 100, boxY + 160, 20, BLACK);
+                    DrawText("and outsmart your opponent!", SCREEN_WIDTH / 2 - 100, boxY + 180, 20, BLACK);
 	            }
 
 	            if (IsKeyPressed(KEY_ENTER)) {
@@ -488,8 +501,8 @@ int main() {
             case GAMEPLAY:
                 DrawTexture(backgroundTexture, 0, 0, WHITE);
                 DrawBases(player_base, npc_base, playerScale, npcScale, playerPosition, npcPosition);
-                DrawUnits(player_units);
-                DrawUnits(npc_units);
+                draw_units(player_units);
+                draw_units(npc_units);
                 draw_improved_ui(player_base, npc_base);
                 draw_timer(elapse_time);
                 break;
