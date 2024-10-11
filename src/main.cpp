@@ -22,33 +22,21 @@ float elapse_time = 0.0f;
 bool game_won = false;
 float win_time = 0.0f;
 
-float lastScore = ReadLastScore();
-Texture2D backgroundTexture;
+float last_score = ReadLastScore();
+Texture2D background_texture;
 
 // Function to initialize and play background music
 Music init_and_play_background_music(const char* file_name) {
     InitAudioDevice();  // Initialize audio device
     Music background_music = LoadMusicStream(file_name);  // Load music
     background_music.looping = true;  // Enable looping
-    SetMusicVolume(background_music, 0.5f);  // Set volume to half
+    SetMusicVolume(background_music, 0.2f);  // Set volume to half
     PlayMusicStream(background_music);  // Play music
     return background_music;
 }
 
-bool is_first_time() {
-	if (const std::ifstream file("first_time_flag.txt"); file.good()) {
-        return false;
-    }
-    else {
-        std::ofstream outfile("first_time_flag.txt");
-        outfile << "This file indicates the game has been opened before.";
-        outfile.close();
-        return true;
-    }
-}
-
 // Function Implementations             // base can't be const because it's health is being modified in the function
-void spawn_unit(std::vector<Unit>& units, Base& base, UnitType unit_type, bool is_player_unit) {
+void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unit_type, bool is_player_unit) {
     Unit newUnit;
     newUnit.type = unit_type;
     newUnit.isPlayerUnit = is_player_unit;
@@ -168,7 +156,7 @@ void draw_units(const std::vector<Unit>& units) {
 }
 
 
-void DrawBases(const Base& player_base, const Base& npc_base, const float player_scale, const float npc_scale, const Vector2 player_position, const Vector2 npc_position) {
+void draw_bases(const Base& player_base, const Base& npc_base, const float player_scale, const float npc_scale, const Vector2 player_position, const Vector2 npc_position) {
     // Draw player and NPC bases with textures, scale, and position
     DrawTextureEx(player_base.texture, player_position, 0.0f, player_scale, WHITE);
     DrawTextureEx(npc_base.texture, npc_position, 0.0f, npc_scale, WHITE);
@@ -182,10 +170,6 @@ void draw_health_bar_for_base(const Base& base, const int base_x, const Color co
 void draw_improved_ui(const Base& player_base, const Base& npc_base) {
     draw_health_bar_for_base(player_base, 20, BLUE);
     draw_health_bar_for_base(npc_base, SCREEN_WIDTH - 220, RED);
-
-	// NPC POINTS AND PLAYER POINTS
-    DrawRectangle(15, 95, 200, 30, LIGHTGRAY); // Box for Player Points
-    DrawRectangle(SCREEN_WIDTH - 225, 95, 200, 30, LIGHTGRAY); // Box for NPC Points
 
     DrawText(TextFormat("Player Points: %d", player_base.points), 20, 100, 20, BLACK);
     DrawText(TextFormat("NPC Points: %d", npc_base.points), SCREEN_WIDTH - 220, 100, 20, BLACK);
@@ -210,12 +194,7 @@ void draw_timer(const float elapse_time) {
 }
 
 int main() {
-
-	CheatChecker cheatChecker(&player_base, &npc_base, &player_units, &npc_units);
-
-	bool first_time = is_first_time();
-
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bitwars");
+	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bitwars");
 
     SetTargetFPS(FRAME_RATE);
 
@@ -232,31 +211,27 @@ int main() {
         return -1;
     }
 
-    backgroundTexture = LoadTexture(BACKGROUND_TEXTURE_PATH);
-    if (backgroundTexture.id == 0) {
+    background_texture = LoadTexture(BACKGROUND_TEXTURE_PATH);
+    if (background_texture.id == 0) {
         std::cerr << "Failed to load background texture! Path might be wrong." << std::endl;
         return -1;
     }
 
-
 	#ifdef _WIN32
     Music background_music = init_and_play_background_music("../assets/Sound/Default_Sound_Track.wav");
 	#elif __APPLE__
-	Music background_music = InitAndPlayBackgroundMusic("assets/Sound/Mac_Default_Sound_Track.wav");
+	Music background_music = init_and_play_background_music("assets/Sound/Mac_Default_Sound_Track.wav");
 	#else
-	Music background_music = InitAndPlayBackgroundMusic("MUSIC_PATH");
+	Music background_music = init_and_play_background_music("MUSIC_PATH");
 	#endif
 
-
     while (!WindowShouldClose()) {
-
 
         // Define scale and position for bases
         float playerScale = 0.10f;
         float npcScale = 0.10f;
         Vector2 playerPosition = {player_base.hitbox.x, player_base.hitbox.y};
         Vector2 npcPosition = {npc_base.hitbox.x, npc_base.hitbox.y};
-
 
         UpdateMusicStream(background_music);  // Update music stream
 
@@ -271,7 +246,6 @@ int main() {
             case START_SCREEN:
                 if (IsKeyPressed(KEY_ENTER)) {
 
-
                     player_base.health = PLAYER_BASE_HEALTH;
                     npc_base.health = NPC_BASE_HEALTH;
                     player_base.points = PLAYER_BASE_INITIAL_POINTS;
@@ -282,6 +256,7 @@ int main() {
                     elapse_time = 0.0f;
                     game_won = false;
                     current_state = GAMEPLAY;
+
                 }
                 break;
 
@@ -290,23 +265,23 @@ int main() {
 
                 // Player input for buying units
                 if (IsKeyPressed(KEY_ONE) && player_base.points >= 5) {
-                    spawn_unit(player_units, player_base, TYPE_1_SOLDIER, true);
+                    SpawnUnit(player_units, player_base, TYPE_1_SOLDIER, true);
                     player_base.points -= 5;
                 }
                 if (IsKeyPressed(KEY_TWO) && player_base.points >= 10) {
-                    spawn_unit(player_units, player_base, TYPE_2_SOLDIER, true);
+                    SpawnUnit(player_units, player_base, TYPE_2_SOLDIER, true);
                     player_base.points -= 10;
                 }
                 if (IsKeyPressed(KEY_THREE) && player_base.points >= 30) {
-                    spawn_unit(player_units, player_base, TYPE_3_SOLDIER, true);
+                    SpawnUnit(player_units, player_base, TYPE_3_SOLDIER, true);
                     player_base.points -= 30;
                 }
                 if (IsKeyPressed(KEY_FOUR) && player_base.points >= 50) {
-                    spawn_unit(player_units, player_base, TANK, true);
+                    SpawnUnit(player_units, player_base, TANK, true);
                     player_base.points -= 50;
                 }
                 if (IsKeyPressed(KEY_FIVE) && player_base.points >= 2) {
-                    spawn_unit(player_units, player_base, BIT, true);
+                    SpawnUnit(player_units, player_base, BIT, true);
                     player_base.points -= 2;
                 }
 
@@ -315,37 +290,37 @@ int main() {
                 if (isOffensive) {
                     // Offensive mode: NPC spawns more aggressive units
                     if (player_units.size() > npc_units.size() && npc_base.points >= 50) {  // If player has more units, spawn tanks
-                        spawn_unit(npc_units, npc_base, TANK, false);
+                        SpawnUnit(npc_units, npc_base, TANK, false);
                         npc_base.points -= 50;
                     } else if (player_units.size() > npc_units.size() && npc_base.points >= 30) {  // If player has more units, spawn Type 3 soldiers
-                        spawn_unit(npc_units, npc_base, TYPE_3_SOLDIER, false);
+                        SpawnUnit(npc_units, npc_base, TYPE_3_SOLDIER, false);
                         npc_base.points -= 30;
                     } else if (npc_base.points >= 10) {  // Default to spawning Type 2 soldiers
-                        spawn_unit(npc_units, npc_base, TYPE_2_SOLDIER, false);
+                        SpawnUnit(npc_units, npc_base, TYPE_2_SOLDIER, false);
                         npc_base.points -= 10;
                     } else if (npc_base.points >= 5) {  // Default to spawning Type 1 soldiers
-                        spawn_unit(npc_units, npc_base, TYPE_1_SOLDIER, false);
+                        SpawnUnit(npc_units, npc_base, TYPE_1_SOLDIER, false);
                         npc_base.points -= 5;
                     } else if (npc_base.points >= 2) {  // Default to spawning Bits
-                        spawn_unit(npc_units, npc_base, BIT, false);
+                        SpawnUnit(npc_units, npc_base, BIT, false);
                         npc_base.points -= 2;
                     }
                 } else {
                     // Defensive mode: NPC spawns units based on player's unit types
                     if (std::count_if(player_units.begin(), player_units.end(), [](const Unit& unit) { return unit.type == TANK; }) > 0 && npc_base.points >= 50) {  // If player has tanks, spawn tanks
-                        spawn_unit(npc_units, npc_base, TANK, false);
+                        SpawnUnit(npc_units, npc_base, TANK, false);
                         npc_base.points -= 50;
                     } else if (std::count_if(player_units.begin(), player_units.end(), [](const Unit& unit) { return unit.type == TYPE_3_SOLDIER; }) > 0 && npc_base.points >= 30) {  // If player has Type 3 soldiers, spawn Type 3 soldiers
-                        spawn_unit(npc_units, npc_base, TYPE_3_SOLDIER, false);
+                        SpawnUnit(npc_units, npc_base, TYPE_3_SOLDIER, false);
                         npc_base.points -= 30;
                     } else if (npc_base.points >= 10) {  // Default to spawning Type 2 soldiers
-                        spawn_unit(npc_units, npc_base, TYPE_2_SOLDIER, false);
+                        SpawnUnit(npc_units, npc_base, TYPE_2_SOLDIER, false);
                         npc_base.points -= 10;
                     } else if (npc_base.points >= 5) {  // Default to spawning Type 1 soldiers
-                        spawn_unit(npc_units, npc_base, TYPE_1_SOLDIER, false);
+                        SpawnUnit(npc_units, npc_base, TYPE_1_SOLDIER, false);
                         npc_base.points -= 5;
                     } else if (npc_base.points >= 2) {  // Default to spawning Bits
-                        spawn_unit(npc_units, npc_base, BIT, false);
+                        SpawnUnit(npc_units, npc_base, BIT, false);
                         npc_base.points -= 2;
                     }
                 }
@@ -453,54 +428,35 @@ int main() {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        DrawTexture(backgroundTexture, 0, 0, WHITE);
+        DrawTexture(background_texture, 0, 0, WHITE);
 
 
         // Draw game elements based on the current state. Seperated from the switch case above for better readability.
         // And everything here is pretty straight forward.
         switch (current_state) {
-	        case START_SCREEN:
-	            // Draw a semi-transparent green background for better readability
-	            DrawRectangle(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 60, 300, 120, Fade(LIGHTGRAY, 0.5f));
+            case START_SCREEN:
+                // Draw a semi-transparent green background for better readability
+                DrawRectangle(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 60, 300, 120, Fade(LIGHTGRAY, 0.5f));
+                
+                // Draw welcome text
+                DrawText("Welcome to Bitwars!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 20, 20, BLACK);
+                DrawText("Press ENTER to start", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 20, 20, BLACK);
 
-	            // Draw welcome text
-	            DrawText("Welcome to Bitwars!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 20, 20, BLACK);
-	            DrawText("Press ENTER to start", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 20, 20, BLACK);
+                DrawRectangle(500, SCREEN_HEIGHT - 220, SCREEN_WIDTH / 2, 250, LIGHTGRAY);
 
-				if (!first_time) {
-        			DrawText("*Hold P to show controls again", SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 + 40, 20, BLACK);
-					
-				}
+                // Draw the text within the box
+                DrawText("Controls:", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 220 + 20, 20, BLACK);
+                DrawText("Key 1 through 5 - Send Units", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 220 + 40, 20, BLACK);
+                DrawText("Description:", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 220 + 120, 20, BLACK);
+                DrawText("Bitwars is a strategy game where you control units", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 220 + 140, 20, BLACK);
+                DrawText("to defeat the enemy base. Use your resources wisely", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 220 + 160, 20, BLACK);
+                DrawText("and outsmart your opponent!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 220 + 180, 20, BLACK);
 
-	            // If it's the first time, show the tutorial
-	            if (first_time || IsKeyDown(KEY_P)) {
-                    // Define the box dimensions and position
-                    int boxX = 500; // X position of the box
-                    int boxY = SCREEN_HEIGHT - 220; // Y position of the box (near the bottom)
-                    int boxWidth = SCREEN_WIDTH / 2; // Width of the box
-                    int boxHeight = 250; // Height of the box
-
-                    // Draw the light gray box
-                    DrawRectangle(boxX, boxY, boxWidth, boxHeight, LIGHTGRAY);
-
-                    // Draw the text within the box
-                    DrawText("Controls:", SCREEN_WIDTH / 2 - 100, boxY + 20, 20, BLACK);
-                    DrawText("Key 1 through 5 - Send Units", SCREEN_WIDTH / 2 - 100, boxY + 40, 20, BLACK);
-                    DrawText("Description:", SCREEN_WIDTH / 2 - 100, boxY + 120, 20, BLACK);
-                    DrawText("Bitwars is a strategy game where you control units", SCREEN_WIDTH / 2 - 100, boxY + 140, 20, BLACK);
-                    DrawText("to defeat the enemy base. Use your resources wisely", SCREEN_WIDTH / 2 - 100, boxY + 160, 20, BLACK);
-                    DrawText("and outsmart your opponent!", SCREEN_WIDTH / 2 - 100, boxY + 180, 20, BLACK);
-	            }
-
-	            if (IsKeyPressed(KEY_ENTER)) {
-	                current_state = GAMEPLAY;
-	            }
-	            break;
-
+        	break;
 
             case GAMEPLAY:
-                DrawTexture(backgroundTexture, 0, 0, WHITE);
-                DrawBases(player_base, npc_base, playerScale, npcScale, playerPosition, npcPosition);
+                DrawTexture(background_texture, 0, 0, WHITE);
+                draw_bases(player_base, npc_base, playerScale, npcScale, playerPosition, npcPosition);
                 draw_units(player_units);
                 draw_units(npc_units);
                 draw_improved_ui(player_base, npc_base);
@@ -540,7 +496,7 @@ int main() {
     // Unload textures
     UnloadTexture(player_base.texture);
     UnloadTexture(npc_base.texture);
-    UnloadTexture(backgroundTexture);
+    UnloadTexture(background_texture);
     
     CloseWindow();
     
