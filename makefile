@@ -19,14 +19,14 @@ WIN_OUT = -o "bin/Bitwars.exe"
 MACOS_OUT = -o "bin/Bitwars"
 
 # Source files
-CFILES = src/*.cpp includes/game_logic/HandleCombat.cpp includes/game_logic/PointMultiplier.cpp includes/game_logic/HandleHighScore.cpp includes/cheat_detection/CheatChecker.cpp
+CFILES = src/*.cpp includes/AI/AIController.cpp includes/Audio/AudioInitializer.cpp includes/Graphics/Renderer.cpp includes/game_logic/UnitHandler.cpp includes/game_logic/HandleCombat.cpp includes/game_logic/PointMultiplier.cpp includes/game_logic/HandleHighScore.cpp includes/cheat_detection/CheatChecker.cpp
 
 # Platform-specific compiler and linker options
 ifeq ($(PLATFORM), windows)
     # Windows-specific settings
     CFLAGS = -O3 -s -fno-stack-protector -fvisibility=hidden -fvisibility-inlines-hidden \
              -fno-rtti -fno-exceptions
-    PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm -static -static-libgcc -static-libstdc++ -lole32 -ldsound -mwindows
+    PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm -static -static-libgcc -static-libstdc++ -lole32 -ldsound 
     OUT_FILE = $(WIN_OUT)
     RM = del /f /q
 else ifeq ($(PLATFORM), macos)

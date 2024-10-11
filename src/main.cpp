@@ -6,7 +6,7 @@ void update_units(std::vector<Unit>& units, Base& opponent_base);
 void draw_units(const std::vector<Unit>& units);
 void draw_health_bar(const Unit& unit);
 void draw_improved_ui(const Base& player_base, const Base& npc_base);
-void draw_bases(const Base& player_base, const Base& npc_base);
+void draw_bases(const Base& player_base, const Base& npc_base, float player_scale, float npc_scale, Vector2 player_position, Vector2 npc_position);
 void draw_health_bar_for_base(const Base& base, int base_x, Color color);
 void draw_timer(float elapse_time);
 
@@ -22,176 +22,7 @@ float elapse_time = 0.0f;
 bool game_won = false;
 float win_time = 0.0f;
 
-float last_score = ReadLastScore();
 Texture2D background_texture;
-
-// Function to initialize and play background music
-Music init_and_play_background_music(const char* file_name) {
-    InitAudioDevice();  // Initialize audio device
-    Music background_music = LoadMusicStream(file_name);  // Load music
-    background_music.looping = true;  // Enable looping
-    SetMusicVolume(background_music, 0.2f);  // Set volume to half
-    PlayMusicStream(background_music);  // Play music
-    return background_music;
-}
-
-// Function Implementations             // base can't be const because it's health is being modified in the function
-void SpawnUnit(std::vector<Unit>& units, Base& base, UnitType unit_type, bool is_player_unit) {
-    Unit newUnit;
-    newUnit.type = unit_type;
-    newUnit.isPlayerUnit = is_player_unit;
-
-    // Set unit properties based on type
-    switch (unit_type) {
-        case TYPE_1_SOLDIER:
-            newUnit.hitbox = {is_player_unit ? base.hitbox.x + base.hitbox.width : base.hitbox.x - 20, base.hitbox.y + base.hitbox.height / 2 - 10, 20, 20};
-            newUnit.health = 10;
-            newUnit.damage = 5;
-            newUnit.speed = UNIT_SPEED;
-            break;
-        case TYPE_2_SOLDIER:
-            newUnit.hitbox = {is_player_unit ? base.hitbox.x + base.hitbox.width : base.hitbox.x - 20, base.hitbox.y + base.hitbox.height / 2 - 15, 20, 30};
-            newUnit.health = 20;
-            newUnit.damage = 10;
-            newUnit.speed = UNIT_SPEED;
-            break;
-        case TYPE_3_SOLDIER:
-            newUnit.hitbox = {is_player_unit ? base.hitbox.x + base.hitbox.width : base.hitbox.x - 30, base.hitbox.y + base.hitbox.height / 2 - 20, 30, 40};
-            newUnit.health = 30;
-            newUnit.damage = 15;
-            newUnit.speed = UNIT_SPEED - 0.5f;  // Slightly slower speed
-            break;
-        case TANK:
-            newUnit.hitbox = {is_player_unit ? base.hitbox.x + base.hitbox.width : base.hitbox.x - 40, base.hitbox.y + base.hitbox.height / 2 - 20, 40, 40};
-            newUnit.health = 50;
-            newUnit.damage = 20;
-            newUnit.speed = UNIT_SPEED - 1.0f;  // Slow speed
-            break;
-        case BIT:
-            newUnit.hitbox = {is_player_unit ? base.hitbox.x + base.hitbox.width : base.hitbox.x - 20, base.hitbox.y + base.hitbox.height / 2 - 10, 20, 20};
-            newUnit.health = 1;
-            newUnit.damage = GetRandomValue(0, 1);
-            newUnit.speed = UNIT_SPEED + 1.5f; // Fast speed 
-            break;
-    }
-
-    units.push_back(newUnit);
-}
-
-// Function Definitions
-void UpdateUnits(std::vector<Unit>& units, Base& opponentBase) {
-    for (auto it = units.begin(); it != units.end(); ) {
-        Unit& unit = *it;
-    	// Move unit towards the opponent base
-        HandleCombat::MoveUnitTowards(unit, {opponentBase.hitbox.x, opponentBase.hitbox.y});
-
-        // Check if the unit has reached the opponent base
-        if (CheckCollisionRecs(unit.hitbox, opponentBase.hitbox)) {
-            // Deal damage to the opponent base
-            opponentBase.health -= unit.damage;
-
-            // Remove the unit
-            unit.health = 0;
-        }
-
-        // Update unit health
-        if (unit.health <= 0) {
-            it = units.erase(it); 
-        }
-        else {
-            ++it;
-        }
-
-    }
-}
-
-void draw_health_bar(const Unit& unit) {
-    const float health_bar_width = static_cast<float>(unit.hitbox.width);  // Ensure width is treated as float
-    const float health_percentage = static_cast<float>(unit.health) /
-        static_cast<float>(unit.type == TYPE_1_SOLDIER ? 10 :
-            unit.type == TYPE_2_SOLDIER ? 20 :
-            unit.type == TYPE_3_SOLDIER ? 30 : 50); // Explicit casting to avoid narrowing
-
-    Color health_color = health_percentage > 0.5f ? GREEN :
-        health_percentage > 0.25f ? YELLOW : RED; // Use floating-point literals
-
-    // Draw health bar above the unit
-    DrawRectangle(static_cast<int>(unit.hitbox.x), static_cast<int>(unit.hitbox.y - 10),
-        static_cast<int>(health_bar_width * health_percentage), 5, health_color);
-
-    // Draw health bar border
-    DrawRectangleLines(static_cast<int>(unit.hitbox.x), static_cast<int>(unit.hitbox.y - 10),
-        static_cast<int>(health_bar_width), 5, BLACK);
-
-    // Draw health bar for tank specifically
-    if (unit.type == TANK) {
-        DrawRectangle(static_cast<int>(unit.hitbox.x), static_cast<int>(unit.hitbox.y - 15),
-            static_cast<int>(health_bar_width * health_percentage), 5, health_color);
-        DrawRectangleLines(static_cast<int>(unit.hitbox.x), static_cast<int>(unit.hitbox.y - 15),
-            static_cast<int>(health_bar_width), 5, BLACK);
-    }
-    else if (unit.type == BIT) {
-        DrawRectangle(static_cast<int>(unit.hitbox.x), static_cast<int>(unit.hitbox.y - 5),
-            static_cast<int>(health_bar_width * health_percentage), 5, health_color);
-        DrawRectangleLines(static_cast<int>(unit.hitbox.x), static_cast<int>(unit.hitbox.y - 5),
-            static_cast<int>(health_bar_width), 5, BLACK);
-    }
-}
-
-
-void draw_bit(const Unit& unit) {
-    // Implement drawing logic for bits
-    DrawRectangle(static_cast<int>(unit.hitbox.x), static_cast<int>(unit.hitbox.y), 5, 5, unit.isPlayerUnit ? BLUE : RED);
-}
-
-void draw_units(const std::vector<Unit>& units) {
-    for (const auto& unit : units) {
-        if (unit.type == BIT) {
-            draw_bit(unit);
-        } else {
-            DrawRectangle(unit.hitbox.x, unit.hitbox.y, unit.hitbox.width, unit.hitbox.height, unit.isPlayerUnit ? BLUE : RED);
-            draw_health_bar(unit);
-        }
-    }
-}
-
-
-void draw_bases(const Base& player_base, const Base& npc_base, const float player_scale, const float npc_scale, const Vector2 player_position, const Vector2 npc_position) {
-    // Draw player and NPC bases with textures, scale, and position
-    DrawTextureEx(player_base.texture, player_position, 0.0f, player_scale, WHITE);
-    DrawTextureEx(npc_base.texture, npc_position, 0.0f, npc_scale, WHITE);
-}
-
-void draw_health_bar_for_base(const Base& base, const int base_x, const Color color) {
-    DrawRectangle(base_x, 20, 200, 30, BLACK);  // Background bar
-    DrawRectangle(base_x, 20, 200 * static_cast<float>(base.health) / PLAYER_BASE_HEALTH, 30, color);  // Health bar
-}
-
-void draw_improved_ui(const Base& player_base, const Base& npc_base) {
-    draw_health_bar_for_base(player_base, 20, BLUE);
-    draw_health_bar_for_base(npc_base, SCREEN_WIDTH - 220, RED);
-
-    DrawText(TextFormat("Player Points: %d", player_base.points), 20, 100, 20, BLACK);
-    DrawText(TextFormat("NPC Points: %d", npc_base.points), SCREEN_WIDTH - 220, 100, 20, BLACK);
-
-    // Draw a semi-transparent box behind the text for better readability
-    DrawRectangle(10, SCREEN_HEIGHT - 210, 320, 180, Fade(LIGHTGRAY, 0.7f));
-
-    DrawText("Unit Purchase Options:", 20, SCREEN_HEIGHT - 200, 20, BLACK);
-    DrawText("[1] Type 1 Soldier - 5 Points", 20, SCREEN_HEIGHT - 170, 20, BLACK);
-    DrawText("[2] Type 2 Soldier - 10 Points", 20, SCREEN_HEIGHT - 140, 20, BLACK);  
-    DrawText("[3] Type 3 Soldier - 30 Points", 20, SCREEN_HEIGHT - 110, 20, BLACK);
-    DrawText("[4] Tank - 50 Points", 20, SCREEN_HEIGHT - 80, 20, BLACK);
-    DrawText("[5] Bit - 2 Points", 20, SCREEN_HEIGHT - 50, 20, BLACK);
-}
-
-void draw_centered_text(const char* text, int posX, int posY, int fontSize, Color color) {
-    DrawText(text, posX - MeasureText(text, fontSize) / 2, posY, fontSize, color);
-}
-
-void draw_timer(const float elapse_time) {
-    draw_centered_text(TextFormat("Time: %.2f", elapse_time), SCREEN_WIDTH/2, 30, 20, BLACK);
-}
 
 int main() {
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bitwars");
@@ -286,44 +117,7 @@ int main() {
                 }
 
 
-                // NPC logic for buying units based on player's actions and available points
-                if (isOffensive) {
-                    // Offensive mode: NPC spawns more aggressive units
-                    if (player_units.size() > npc_units.size() && npc_base.points >= 50) {  // If player has more units, spawn tanks
-                        SpawnUnit(npc_units, npc_base, TANK, false);
-                        npc_base.points -= 50;
-                    } else if (player_units.size() > npc_units.size() && npc_base.points >= 30) {  // If player has more units, spawn Type 3 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_3_SOLDIER, false);
-                        npc_base.points -= 30;
-                    } else if (npc_base.points >= 10) {  // Default to spawning Type 2 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_2_SOLDIER, false);
-                        npc_base.points -= 10;
-                    } else if (npc_base.points >= 5) {  // Default to spawning Type 1 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_1_SOLDIER, false);
-                        npc_base.points -= 5;
-                    } else if (npc_base.points >= 2) {  // Default to spawning Bits
-                        SpawnUnit(npc_units, npc_base, BIT, false);
-                        npc_base.points -= 2;
-                    }
-                } else {
-                    // Defensive mode: NPC spawns units based on player's unit types
-                    if (std::count_if(player_units.begin(), player_units.end(), [](const Unit& unit) { return unit.type == TANK; }) > 0 && npc_base.points >= 50) {  // If player has tanks, spawn tanks
-                        SpawnUnit(npc_units, npc_base, TANK, false);
-                        npc_base.points -= 50;
-                    } else if (std::count_if(player_units.begin(), player_units.end(), [](const Unit& unit) { return unit.type == TYPE_3_SOLDIER; }) > 0 && npc_base.points >= 30) {  // If player has Type 3 soldiers, spawn Type 3 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_3_SOLDIER, false);
-                        npc_base.points -= 30;
-                    } else if (npc_base.points >= 10) {  // Default to spawning Type 2 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_2_SOLDIER, false);
-                        npc_base.points -= 10;
-                    } else if (npc_base.points >= 5) {  // Default to spawning Type 1 soldiers
-                        SpawnUnit(npc_units, npc_base, TYPE_1_SOLDIER, false);
-                        npc_base.points -= 5;
-                    } else if (npc_base.points >= 2) {  // Default to spawning Bits
-                        SpawnUnit(npc_units, npc_base, BIT, false);
-                        npc_base.points -= 2;
-                    }
-                }
+                npc_logic_update(npc_units, npc_base, player_units, isOffensive);
 
                 /* 
                 @brief Award points to both players over time
@@ -335,46 +129,6 @@ int main() {
                 The player_base and npc_base points are incremented by POINTS_PER_TICK if the point_tick_counter is greater than or equal to POINTS_INTERVAL.
 
                 Basically every 60 frames (1 second), the player and NPC bases are awarded POINTS_PER_TICK points. Because when the point_tick_counter reaches 60, the points are awarded and the counter is reset to 0. This is done to prevent points from being awarded every frame, which would be too fast. This is a simple way to implement a time-based point award system.
-
-                @flow-chart
-                +----------------------------+
-                |   System Checkpoint Logic  |
-                +----------------------------+
-                            |
-                            V
-                +---------------------------+
-                |  Increment Tick Counter   |
-                +---------------------------+
-                            |
-                            V
-                +---------------------------+
-                |  Check if point_tick_counter|
-                |   >= POINTS_INTERVAL      |
-                +---------------------------+
-                            |
-                        +----+----+
-                        |         |
-                        | Yes     | No
-                        |         |
-                        V         |
-                +---------------------------+
-                |   Add POINTS_PER_TICK to  |
-                |   player_base.points       |
-                |   Add POINTS_PER_TICK to  |
-                |   npc_base.points          |
-                +---------------------------+
-                            |
-                            V
-                +---------------------------+
-                |  Reset point_tick_counter to |
-                |           0               |
-                +---------------------------+
-                            |
-                            V
-                +---------------------------+
-                |       Repeat Every 60     |
-                |          Ticks (1 sec)    |
-                +---------------------------+
                 */
 
                 // Update units and check collisions
@@ -384,7 +138,6 @@ int main() {
                 // move the units towards the base 
                 UpdateUnits(player_units, npc_base);
                 UpdateUnits(npc_units, player_base);
-
 
                 if (point_tick_counter >= POINTS_INTERVAL) {
                     player_base.points += POINTS_PER_TICK;

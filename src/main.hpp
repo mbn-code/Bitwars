@@ -10,8 +10,6 @@
 #define SCREEN_HEIGHT 800
 #define FRAME_RATE 60
 
-#define PLAYER_BASE_HEALTH 120
-#define NPC_BASE_HEALTH 120
 #define UNIT_SPEED 2.0f
 #define POINTS_PER_TICK 1
 #define POINTS_INTERVAL 60
@@ -24,19 +22,27 @@
 #include "../includes/game_logic/GameDataStructures.hpp"
 #include "../includes/game_logic/HandleCombat.hpp"
 #include "../includes/game_logic/HandleHighScore.hpp"
-#include "../includes/game_logic/CheatChecker.hpp"
+#include "../includes/game_logic/Constants.hpp"
+#include "../includes/cheat_detection/CheatChecker.hpp"
+#include "../includes/Audio/AudioInitializer.hpp"
+#include "../includes/game_logic/UnitHandler.hpp"
+#include "../includes/AI/AIController.hpp"
 #include "../lib/windows/raylib.h"
 #include "../lib/windows/rlgl.h"
 #include <fstream>
+#include <algorithm>
 // Load rcore and rlgl here for textures to work on windows:
 // #include "../
-#include <algorithm>
 #elif __APPLE__  // macOS-specific includes
 #include "../includes/game_logic/PointMultiplier.hpp"
 #include "../includes/game_logic/GameDataStructures.hpp"
 #include "../includes/game_logic/HandleCombat.hpp"
 #include "../includes/game_logic/HandleHighScore.hpp"
+#include "../includes/game_logic/UnitHandler.hpp"
 #include "../includes/cheat_detection/CheatChecker.hpp"
+#include "../includes/Graphics/Renderer.hpp"
+#include "../includes/Audio/AudioInitializer.hpp"
+#include "../includes/AI/AIController.hpp"
 #include "../lib/raylib.h"
 #else  // Fallback for other platforms
 #include "../includes/PointMultiplier.hpp"
@@ -62,5 +68,6 @@
 #else
 #error "Unknown platform"
 #endif
+
 
 #endif // MAIN_HPP
