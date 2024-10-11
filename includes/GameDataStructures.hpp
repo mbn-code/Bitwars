@@ -57,6 +57,7 @@ struct Base {
     int health;
     int points;
     Vector2 position;
+    Texture2D texture;
 };
 
 #endif // GAMEDATASTRUCTURES_HPP

@@ -22,6 +22,7 @@ bool gameWon = false;
 float winTime = 0.0f;
 
 float lastScore = ReadLastScore();
+Texture2D backgroundTexture;
 
 // Function to initialize and play background music
 Music InitAndPlayBackgroundMusic(const char* fileName) {
@@ -142,14 +143,14 @@ void DrawUnits(const std::vector<Unit>& units) {
 }
 
 
-void DrawBases(const Base& playerBase, const Base& npcBase) {
-    // Draw player and NPC bases with distinct colors
-    DrawRectangleRec(playerBase.hitbox, BLUE);
-    DrawRectangleRec(npcBase.hitbox, RED);
+void DrawBases(const Base& playerBase, const Base& npcBase, float playerScale, float npcScale, Vector2 playerPosition, Vector2 npcPosition) {
+    // Draw player and NPC bases with textures, scale, and position
+    DrawTextureEx(playerBase.texture, playerPosition, 0.0f, playerScale, WHITE);
+    DrawTextureEx(npcBase.texture, npcPosition, 0.0f, npcScale, WHITE);
 }
 
 void DrawHealthBarForBase(const Base& base, int baseX, Color color) {
-    DrawRectangle(baseX, 20, 200, 30, GRAY);  // Background bar
+    DrawRectangle(baseX, 20, 200, 30, BLACK);  // Background bar
     DrawRectangle(baseX, 20, 200 * (float)base.health / PLAYER_BASE_HEALTH, 30, color);  // Health bar
 }
 
@@ -160,12 +161,15 @@ void DrawImprovedUI(const Base& playerBase, const Base& npcBase) {
     DrawText(TextFormat("Player Points: %d", playerBase.points), 20, 100, 20, BLACK);
     DrawText(TextFormat("NPC Points: %d", npcBase.points), SCREEN_WIDTH - 220, 100, 20, BLACK);
 
-    DrawText("Unit Purchase Options:", 20, SCREEN_HEIGHT - 200, 20, DARKGRAY);
-    DrawText("[1] Type 1 Soldier - 5 Points", 20, SCREEN_HEIGHT - 170, 20, DARKGRAY);
-    DrawText("[2] Type 2 Soldier - 10 Points", 20, SCREEN_HEIGHT - 140, 20, DARKGRAY);
-    DrawText("[3] Type 3 Soldier - 30 Points", 20, SCREEN_HEIGHT - 110, 20, DARKGRAY);
-    DrawText("[4] Tank - 50 Points", 20, SCREEN_HEIGHT - 80, 20, DARKGRAY);
-    DrawText("[5] Bit - 2 Points", 20, SCREEN_HEIGHT - 50, 20, DARKGRAY);
+    // Draw a semi-transparent box behind the text for better readability
+    DrawRectangle(10, SCREEN_HEIGHT - 210, 320, 180, Fade(LIGHTGRAY, 0.7f));
+
+    DrawText("Unit Purchase Options:", 20, SCREEN_HEIGHT - 200, 20, BLACK);
+    DrawText("[1] Type 1 Soldier - 5 Points", 20, SCREEN_HEIGHT - 170, 20, BLACK);
+    DrawText("[2] Type 2 Soldier - 10 Points", 20, SCREEN_HEIGHT - 140, 20, BLACK);
+    DrawText("[3] Type 3 Soldier - 30 Points", 20, SCREEN_HEIGHT - 110, 20, BLACK);
+    DrawText("[4] Tank - 50 Points", 20, SCREEN_HEIGHT - 80, 20, BLACK);
+    DrawText("[5] Bit - 2 Points", 20, SCREEN_HEIGHT - 50, 20, BLACK);
 }
 
 void DrawCenteredText(const char* text, int posX, int posY, int fontSize, Color color) {
@@ -184,10 +188,39 @@ int main() {
 
     SetTargetFPS(FRAME_RATE);
 
+    // Load textures
+    npcBase.texture = LoadTexture("assets/Images/Base_texture_BR.png");
+    if (npcBase.texture.id == 0) {
+        std::cerr << "Failed to load player base texture! base 1" << std::endl;
+        return -1;
+    }
+
+    playerBase.texture = LoadTexture("assets/Images/Base2_texture_BR.png");
+    if (playerBase.texture.id == 0) {
+        std::cerr << "Failed to load NPC base texture! base 2" << std::endl;
+        return -1;
+    }
+
+    backgroundTexture = LoadTexture("assets/Images/background.png");
+    if (backgroundTexture.id == 0) {
+        std::cerr << "Failed to load background texture! background " << std::endl;
+        return -1;
+    }
+
+
+
     Music backgroundMusic = InitAndPlayBackgroundMusic("assets/Sound/Default_Sound_Track.wav");
 
     while (!WindowShouldClose()) {
 
+
+        // Define scale and position for bases
+        float playerScale = 0.10f;
+        float npcScale = 0.10f;
+        Vector2 playerPosition = {playerBase.hitbox.x, playerBase.hitbox.y};
+        Vector2 npcPosition = {npcBase.hitbox.x, npcBase.hitbox.y};
+
+        
         cheatChecker.MonitorForCheats();
 
         UpdateMusicStream(backgroundMusic);  // Update music stream
@@ -385,19 +418,27 @@ int main() {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
+        DrawTexture(backgroundTexture, 0, 0, WHITE);
+
+
         // Draw game elements based on the current state. Seperated from the switch case above for better readability.
         // And everything here is pretty straight forward.
         switch (currentState) {
             case START_SCREEN:
+                // Draw a semi-transparent green background for better readability
+                DrawRectangle(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 60, 300, 120, Fade(LIGHTGRAY, 0.5f));
+                
+                // Draw welcome text
                 DrawText("Welcome to Bitwars!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 20, 20, BLACK);
-                DrawText("Press ENTER to start", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 20, 20, DARKGRAY);
+                DrawText("Press ENTER to start", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 20, 20, BLACK);
                 break;
 
             case GAMEPLAY:
-                DrawBases(playerBase, npcBase);
-                DrawImprovedUI(playerBase, npcBase);
+                DrawTexture(backgroundTexture, 0, 0, WHITE);
+                DrawBases(playerBase, npcBase, playerScale, npcScale, playerPosition, npcPosition);
                 DrawUnits(playerUnits);
                 DrawUnits(npcUnits);
+                DrawImprovedUI(playerBase, npcBase);
                 DrawTimer(elapsedTime);
                 break;
 
@@ -413,10 +454,10 @@ int main() {
                 if (playerBase.health <= 0) {
                     DrawText("Game Over! You Lost!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 20, 20, GRAY);
                 } else if (npcBase.health <= 0) {
-                    DrawText("Congratulations! You Won!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 20, 20, GRAY);
+                    DrawText("Congratulations! You Won!", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 20, 20, BLACK);
                 }
-                DrawText(TextFormat("Time: %.2f seconds", winTime), SCREEN_WIDTH / 2 - 60, SCREEN_HEIGHT / 2, 20, GRAY);
-                DrawText("Press ENTER to restart", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 40, 20, GRAY);
+                DrawText(TextFormat("Time: %.2f seconds", winTime), SCREEN_WIDTH / 2 - 60, SCREEN_HEIGHT / 2, 20, BLACK);
+                DrawText("Press ENTER to restart", SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 40, 20, BLACK);
 
                 // Check if the game is won and write the score
                 if (!gameWon) {
@@ -430,6 +471,12 @@ int main() {
     }
     UnloadMusicStream(backgroundMusic);
     CloseAudioDevice();
+    
+        // Unload textures
+    UnloadTexture(playerBase.texture);
+    UnloadTexture(npcBase.texture);
+    UnloadTexture(backgroundTexture);
+    
     CloseWindow();
     
     return 0;

@@ -1,30 +1,45 @@
-#ifndef CHEAT_CHECKER_HPP
-#define CHEAT_CHECKER_HPP
+#ifndef CHEATCHECKER_HPP
+#define CHEATCHECKER_HPP
 
+#include "GameDataStructures.hpp"  // Include the file where Base and Unit are defined
 #include <vector>
-#include "../src/main.hpp" // Include this to access game types like `Base`, `Unit`, etc.
 
-// Define a class to handle cheat detection
+// Define the CheatChecker class
 class CheatChecker {
 public:
     // Constructor
     CheatChecker(Base* playerBase, Base* npcBase, std::vector<Unit>* playerUnits, std::vector<Unit>* npcUnits);
 
-    // Method to check for cheats in game state
+    // Function to monitor for cheats
     void MonitorForCheats();
 
 private:
-    // Reference to game elements to monitor
+    // Function to check health values of units and bases
+    void CheckHealthValues();
+
+    // Helper function to verify a single unit's health
+    void VerifyUnitHealth(const Unit& unit, bool isPlayerUnit); // Add this function declaration
+
+    // Function to check if points are being modified illegally
+    void CheckPoints();
+
+    // Function to verify that unit data is intact and has not been tampered with
+    void VerifyUnitDataIntegrity();
+
+    // Helper function to verify a single unit's data integrity
+    void VerifySingleUnitIntegrity(const Unit& unit, bool isPlayerUnit); // Add this function declaration
+
+    // Function to verify that base data is intact and has not been tampered with
+    void VerifyBaseDataIntegrity();
+
+    // Data members
     Base* playerBase;
     Base* npcBase;
     std::vector<Unit>* playerUnits;
     std::vector<Unit>* npcUnits;
 
-    // Helper functions to detect anomalies
-    void CheckHealthValues();
-    void CheckPoints();
-    void VerifyUnitDataIntegrity();
-    void VerifyBaseDataIntegrity(); // New function to verify base data integrity
+    int lastPlayerPoints;  // Declare this member
+    int lastNpcPoints;     // Declare this member
 };
 
-#endif // CHEAT_CHECKER_HPP
+#endif // CHEATCHECKER_HPP

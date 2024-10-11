@@ -48,4 +48,3 @@ build:
 # Clean up generated binaries
 clean:
 	$(RM) bin/Bitwars.exe bin/Bitwars
-

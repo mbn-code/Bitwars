@@ -27,20 +27,19 @@
 #include "../includes/CheatChecker.hpp"
 #include "../lib/windows/raylib.h"
 #elif __APPLE__  // macOS-specific includes
-#include "includes/PointMultiplier.hpp"
-#include "includes/GameDataStructures.hpp"
-#include "includes/HandleCombat.hpp"
-#include "includes/HandleHighScore.hpp"
-#include "includes/CheatChecker.hpp"
-#include "lib/raylib.h"
+#include "../includes/PointMultiplier.hpp"
+#include "../includes/GameDataStructures.hpp"
+#include "../includes/HandleCombat.hpp"
+#include "../includes/HandleHighScore.hpp"
+#include "../includes/CheatChecker.hpp"
+#include "../lib/raylib.h"
 #else  // Fallback for other platforms
-#include "includes/PointMultiplier.hpp"
-#include "includes/GameDataStructures.hpp"
-#include "includes/HandleCombat.hpp"
-#include "includes/HandleHighScore.hpp"
-#include "includes/CheatChecker.hpp"
-#include "raylib.h"
-
+#include "../includes/PointMultiplier.hpp"
+#include "../includes/GameDataStructures.hpp"
+#include "../includes/HandleCombat.hpp"
+#include "../includes/HandleHighScore.hpp"
+#include "../includes/CheatChecker.hpp"
+#include "../lib/raylib.h"
 #endif
 
 #endif // MAIN_HPP
