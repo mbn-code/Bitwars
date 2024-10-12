@@ -4,7 +4,8 @@
 #ifdef _WIN32
 #include "../game_logic/GameDataStructures.hpp"
 #include "../game_logic/Constants.hpp"
-#include "../src/main.hpp"
+#include "../../src/main.hpp"
+#include "../../lib/windows/raylib.h"
 #elif __APPLE__
 #include "src/main.hpp"
 #include "game_logic/GameDataStructures.hpp"
