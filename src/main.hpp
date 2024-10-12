@@ -53,21 +53,4 @@
 #include "../lib/raylib.h"
 #endif
 
-
-// texture loading paths for different platforms
-#ifdef _WIN32
-#define BASE_TEXTURE_PATH "../assets/Images/Base_texture_BR.png"
-#define BASE2_TEXTURE_PATH "../assets/Images/Base2_texture_BR.png"
-#define BACKGROUND_TEXTURE_PATH "../assets/Images/background.png"
-#define MUSIC_PATH "../assets/Sound/Default_Sound_Track.wav"
-#elif __APPLE__
-#define BASE_TEXTURE_PATH "assets/Images/Base_texture_BR.png"
-#define BASE2_TEXTURE_PATH "assets/Images/Base2_texture_BR.png"
-#define BACKGROUND_TEXTURE_PATH "assets/Images/background.png"
-#define MUSIC_PATH "assets/Sound/Default_Sound_Track.wav"
-#else
-#error "Unknown platform"
-#endif
-
-
 #endif // MAIN_HPP

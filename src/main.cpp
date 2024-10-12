@@ -1,4 +1,9 @@
 #include "main.hpp"
+#include "../lib/GLFW/glfw3.h"
+#include "../assets/generated/src/generated/background_png.h"
+#include "../assets/generated/src/generated/Base2_texture_BR_png.h"
+#include "../assets/generated/src/generated/Base_texture_BR_png.h"
+#include "../assets/generated/src/generated/Default_Sound_Track_wav.h"
 
 // Function Prototypes
 void spawn_unit(std::vector<Unit>& units, Base& base, UnitType unit_type, bool is_player_unit);
@@ -10,10 +15,46 @@ void draw_bases(const Base& player_base, const Base& npc_base, float player_scal
 void draw_health_bar_for_base(const Base& base, int base_x, Color color);
 void draw_timer(float elapse_time);
 
+void spawn_unit(std::vector<Unit>& units, Base& base, UnitType unit_type, bool is_player_unit) {
+    Unit new_unit;
+    new_unit.type = unit_type;
+    new_unit.isPlayerUnit = is_player_unit;
+    new_unit.hitbox = { base.hitbox.x, base.hitbox.y, 20, 20 }; // Example hitbox size
+    new_unit.health = 100; // Example health value
+    new_unit.damage = 10; // Example damage value
+    new_unit.speed = 5; // Example speed value
+
+    units.push_back(new_unit);
+}
+
+void update_units(std::vector<Unit>& units, Base& opponent_base) {
+    for (auto& unit : units) {
+        // Move unit towards the opponent base
+        if (unit.isPlayerUnit) {
+            unit.hitbox.x += unit.speed * GetFrameTime();
+        }
+        else {
+            unit.hitbox.x -= unit.speed * GetFrameTime();
+        }
+
+        // Check for collision with opponent base
+        if (CheckCollisionRecs(unit.hitbox, opponent_base.hitbox)) {
+            opponent_base.health -= unit.damage;
+            unit.health = 0; // Unit is destroyed after attacking
+        }
+    }
+
+    // Remove destroyed units
+    units.erase(std::remove_if(units.begin(), units.end(), [](const Unit& unit) {
+        return unit.health <= 0;
+        }), units.end());
+}
+
+
 // Global Variables
 GameState current_state = START_SCREEN;
-Base player_base = {{50, SCREEN_HEIGHT / 2 - 50, 50, 100}, PLAYER_BASE_HEALTH, PLAYER_BASE_INITIAL_POINTS};
-Base npc_base = {{SCREEN_WIDTH - 100, SCREEN_HEIGHT / 2 - 50, 50, 100}, NPC_BASE_HEALTH, NPC_BASE_INITIAL_POINTS};
+Base player_base = { {50, SCREEN_HEIGHT / 2 - 50, 50, 100}, PLAYER_BASE_HEALTH, PLAYER_BASE_INITIAL_POINTS };
+Base npc_base = { {SCREEN_WIDTH - 100, SCREEN_HEIGHT / 2 - 50, 50, 100}, NPC_BASE_HEALTH, NPC_BASE_INITIAL_POINTS };
 std::vector<Unit> player_units;
 std::vector<Unit> npc_units;
 int point_tick_counter = 0;
@@ -25,36 +66,36 @@ float win_time = 0.0f;
 Texture2D background_texture;
 
 int main() {
-	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bitwars");
 
+
+	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bitwars");
     SetTargetFPS(FRAME_RATE);
 
-    // Load textures based on platform-specific paths
-    npc_base.texture = LoadTexture(BASE_TEXTURE_PATH);
-    if (npc_base.texture.id == 0) {
-        std::cerr << "Failed to load NPC base texture! Path might be wrong." << std::endl;
+    // Load textures from memory
+    Image baseTextureImage = LoadImageFromMemory(".png", Base_texture_BR_png, Base_texture_BR_png_len);
+    if (baseTextureImage.data == NULL) {
+        std::cerr << "Failed to load Base_texture_BR.png" << std::endl;
         return -1;
     }
+    Texture2D baseTexture = LoadTextureFromImage(baseTextureImage);
 
-    player_base.texture = LoadTexture(BASE2_TEXTURE_PATH);
-    if (player_base.texture.id == 0) {
-        std::cerr << "Failed to load Player base texture! Path might be wrong." << std::endl;
+    Image base2TextureImage = LoadImageFromMemory(".png", Base2_texture_BR_png, Base2_texture_BR_png_len);
+    if (base2TextureImage.data == NULL) {
+        std::cerr << "Failed to load Base2_texture_BR.png" << std::endl;
         return -1;
     }
+    Texture2D base2Texture = LoadTextureFromImage(base2TextureImage);
 
-    background_texture = LoadTexture(BACKGROUND_TEXTURE_PATH);
-    if (background_texture.id == 0) {
-        std::cerr << "Failed to load background texture! Path might be wrong." << std::endl;
+    Image backgroundTextureImage = LoadImageFromMemory(".png", background_png, background_png_len);
+    if (backgroundTextureImage.data == NULL) {
+        std::cerr << "Failed to load background.png" << std::endl;
         return -1;
     }
+    background_texture = LoadTextureFromImage(backgroundTextureImage);
 
-	#ifdef _WIN32
-    Music background_music = init_and_play_background_music("../assets/Sound/Default_Sound_Track.wav");
-	#elif __APPLE__
-	Music background_music = init_and_play_background_music("assets/Sound/Mac_Default_Sound_Track.wav");
-	#else
-	Music background_music = init_and_play_background_music("MUSIC_PATH");
-	#endif
+    // Assign textures to bases
+    player_base.texture = baseTexture;
+    npc_base.texture = base2Texture;
 
     while (!WindowShouldClose()) {
 
@@ -64,7 +105,7 @@ int main() {
         Vector2 playerPosition = {player_base.hitbox.x, player_base.hitbox.y};
         Vector2 npcPosition = {npc_base.hitbox.x, npc_base.hitbox.y};
 
-        UpdateMusicStream(background_music);  // Update music stream
+        //UpdateMusicStream(background_music);  // Update music stream
 
         if (current_state == GAMEPLAY && !game_won) {
             elapse_time += GetFrameTime();
@@ -241,14 +282,15 @@ int main() {
                 }
             break;
             }
-        EndDrawing();
+
+    	EndDrawing();
     }
-    UnloadMusicStream(background_music);
-    CloseAudioDevice();
+    //UnloadMusicStream(background_music);
+    // CloseAudioDevice();
     
     // Unload textures
-    UnloadTexture(player_base.texture);
-    UnloadTexture(npc_base.texture);
+    UnloadTexture(baseTexture);
+    UnloadTexture(base2Texture);
     UnloadTexture(background_texture);
     
     CloseWindow();
