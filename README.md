@@ -1,132 +1,122 @@
+# ⚔️ Bitwars - War Simulation Game
 
-# Bitwars - cpp raylib project
+**Bitwars** is a simple war simulation game developed using C++ and the **Raylib** graphics library. In this game, players engage in combat by spawning units and managing a base, trying to outlast the opposing NPC forces. The game includes mechanics like combat handling, points accumulation, and a high score system.
 
-The reason I made this is to challenge myself, to make something that is similar to a game, or a game structure without using a game engine like I have before.
+---
 
-## Overview
+## 🗂️ Project Structure
 
-A simple war simulation game developed using C++ and Raylib. Features include player and NPC bases, unit spawning, and combat mechanics.
+The project is organized into several directories and files, each serving a specific purpose. Here's a brief overview:
 
-## Project Structure
+### 📁 Directories
 
-```plaintext
-.vscode/
-├── c_cpp_properties.json
-├── launch.json
-├── settings.json
-└── tasks.json
+- **`.vscode/`**: Contains Visual Studio Code configuration files.
+  - `c_cpp_properties.json`, `launch.json`, `settings.json`, `tasks.json`: Configuration files for setting up the C++ environment and build tasks.
 
-assets/
-bin/
-build_osx/
-includes/
-├── GameDataStructures.hpp
-├── HandleCombat.cpp
-├── HandleCombat.hpp
-├── PointMultiplier.cpp
-└── PointMultiplier.hpp
+- **`assets/`**: Contains game assets such as images and sounds.
+  - `generated/`: Holds dynamically generated assets.
+  - `main.py`: Script for asset generation.
 
-lib/
-├── libraylib.a
-├── raylib.h
-└── raymath.h
+- **`bin/`**: Contains the compiled binaries for the game.
+  - `Bitwars/`, `Bitwars.exe`: The game executable files.
 
-makefile
-README.md
-src/
-├── main.cpp
-└── main.hpp
-```
+- **`includes/`**: Contains header files for various game components.
+  - `GameDataStructures.hpp`: Defines the data structures used in the game.
+  - `HandleCombat.hpp`: Header for combat-related functionality.
+  - `PointMultiplier.hpp`: Header for point multiplier logic.
 
-## Prerequisites
+- **`lib/`**: External libraries and headers used by the game.
+  - `GLFW/`: GLFW library files.
+  - `libraylib.a`: Static Raylib library.
+  - `raylib.h`, `raymath.h`: Raylib header files.
+  - `windows/`: Windows-specific Raylib files.
 
-- C++17 compatible compiler (e.g., clang++, g++)
-- Raylib library
+- **`src/`**: Contains source code files.
+  - `main.cpp`: Main game loop and logic.
+  - `main.hpp`: Header for the main source file.
 
-## Building the Project
+### 📄 Key Files
+
+- **`makefile`**: Defines how the project is built. Supports building for macOS and Windows.
+- **`README.md`**: The main documentation for the project.
+- **`.gitignore`**: Specifies files and directories to be ignored by Git (e.g., build artifacts).
+
+---
+
+## ⚙️ Building the Project
 
 ### macOS
 
-```sh
+To build the game on macOS, run:
+
+```bash
 make PLATFORM=macos
 ```
 
 ### Windows
 
-```sh
+To build the game on Windows, run:
+
+```bash
 make PLATFORM=windows
 ```
 
-This will compile the source files and spit out a executable for either macOS arm or windows x64
+---
 
-## 🚀 Getting Started
+## 🕹️ Running the Game
 
-### Running the Game
+Once the project is built, you can run the game using the compiled executable.
 
-After building the project, you can run the game using the following command:
+### macOS Run
 
-```sh
-./bin/build_osx
+```bash
+./Bitwars
 ```
 
-```sh
-./bin/windows
+### Windows Run
+
+```bash
+Bitwars.exe
 ```
 
-## 📄 Project Files
+---
 
-### Source Files
+## 🎮 Game Mechanics
 
-- `src/main.cpp`: Contains the main game loop and game logic.
-- `src/main.hpp`: Header file for `main.cpp`.
+### 🏠 Bases
 
-### Include Files
+- **Player and NPC Bases**: Each side (player and NPC) has a base represented by the `Base` struct.
+- **Attributes**:
+  - `health`: Represents the base's health.
+  - `points`: Accumulated points based on game progress.
 
-- `includes/GameDataStructures.hpp`: Defines the data structures used in the game.
-- `includes/HandleCombat.hpp`: Header file for `HandleCombat.cpp`.
-- `includes/PointMultiplier.hpp`: Header file for `PointMultiplier.cpp`.
-- `includes/HandleHighScore.hpp`: Header file for handling high scores.
-- `lib/raylib.h`: Raylib library header.
+### 👥 Units
 
-### Library Files
+- **Spawning**: Both the player and NPC can spawn units to attack the opposing base.
+- **Control**: Units are controlled by both the player and NPC.
+- **Combat**: Units engage in combat automatically when they collide with enemy units.
 
-- `lib/raylib.h`: Raylib library header.
-- `lib/raymath.h`: Raylib math library header.
-- `lib/libraylib.a`: Raylib static library.
+### ⚔️ Combat
 
-### Configuration Files
+- **Handling**: Combat is managed by the `HandleCombat` class, which handles logic for units fighting each other.
+- **Points System**: Points are awarded based on unit health and combat outcomes.
 
-- `.vscode/tasks.json`: VSCode tasks for building the project.
-- `makefile`: Makefile for building the project.
-
-## Game Mechanics
-
-### Bases
-
-- **Player and NPC Bases**: Represented by the `Base` struct.
-  - **Attributes**:
-    - `health`: The health of the base.
-    - `points`: Points accumulated by the base.
-
-### Units
-
-- **Spawning**: Units are spawned by both the player and NPC.
-- **Control**: Units are controlled by the player and NPC.
-- **Combat**: Units engage in combat when they collide with enemy units.
-
-### Combat
-
-- **Handling**: Managed by the `HandleCombat` class.
-- **Points System**: Points are awarded based on the health of units and the outcomes of combat encounters.
-
-### High Scores
+### 🏆 High Scores
 
 - **Handling**: Managed by the `HandleHighScore` class.
-- **Storage**: High scores are stored and retrieved to track player performance.
+- **Storage**: High scores are stored and retrieved to track the player's best performance.
 
-### Point Multiplier
+### 🔢 Point Multiplier
 
-- **Mechanics**: The `PointMultiplier` class handles the logic for multiplying points based on specific conditions or achievements within the game.
+- **Mechanics**: The `PointMultiplier` class manages conditions for increasing the player's points under certain conditions, adding a strategic layer to gameplay.
 
-- Player and NPC bases are represented by the `Base` struct.
-- Bases have `health` and `points` attributes.
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow the standard [GitHub flow](https://guides.github.com/introduction/flow/) when contributing:
+
+1. **Fork** the repository.
+2. **Create** a new branch for your feature or bugfix.
+3. **Commit** your changes and **push** them to your fork.
+4. **Submit** a pull request and provide a clear description of the changes.
