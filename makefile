@@ -2,7 +2,6 @@
 PLATFORM ?= macos
 
 # Compiler definitions
-# Change the default compiler to the MinGW-w64 compiler for Windows
 ifeq ($(PLATFORM), windows)
     COMPILER = x86_64-w64-mingw32-g++
 else
@@ -24,18 +23,23 @@ CFILES = src/*.cpp includes/AI/AIController.cpp includes/Audio/AudioInitializer.
 # Platform-specific compiler and linker options
 ifeq ($(PLATFORM), windows)
     # Windows-specific settings
-    CFLAGS = -O3 -s -fno-stack-protector -fvisibility=hidden -fvisibility-inlines-hidden \
-             -fno-rtti -fno-exceptions
-    PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm -static -static-libgcc -static-libstdc++ -lole32 -ldsound 
+    CFLAGS = -O3 -s -march=native -mtune=native -flto -fno-stack-protector \
+             -fvisibility=hidden -fvisibility-inlines-hidden -fno-rtti -fno-exceptions \
+             -funroll-loops -falign-functions -ffast-math
+    PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm \
+                    -static -static-libgcc -static-libstdc++ -lole32 -ldsound 
     OUT_FILE = $(WIN_OUT)
     RM = del /f /q
 else ifeq ($(PLATFORM), macos)
     # macOS-specific settings
-    CFLAGS = -O3 -fno-stack-protector -fvisibility=hidden -fvisibility-inlines-hidden \
-             -fno-rtti -fno-exceptions -mmacosx-version-min=15 \
+    CFLAGS = -O3 -march=native -mtune=native -flto -fno-stack-protector \
+             -fvisibility=hidden -fvisibility-inlines-hidden -fno-rtti -fno-exceptions \
+             -funroll-loops -falign-functions -ffast-math -mmacosx-version-min=15 \
              -Wl,-sectcreate,__RESTRICT,__restrict,/dev/null \
              -Wl,-dead_strip
-    PLATFORM_OPTS = -Llib -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL -framework OpenAL -framework AudioToolbox lib/libraylib.a 
+    PLATFORM_OPTS = -Llib -framework CoreVideo -framework IOKit -framework Cocoa \
+                    -framework GLUT -framework OpenGL -framework OpenAL \
+                    -framework AudioToolbox lib/libraylib.a 
     OUT_FILE = $(MACOS_OUT)
     RM = rm -f
 endif
