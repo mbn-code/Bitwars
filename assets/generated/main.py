@@ -1,3 +1,8 @@
+# @brief: This script converts binary files to C header files.
+# This is useful for embedding binary files in the compiled binary.
+# The generated header files can be included in the source code to access the binary data.
+# This works well for small files, but not recommended for large files.
+
 import os
 
 def convert_to_header(file_path, output_dir):
@@ -8,6 +13,14 @@ def convert_to_header(file_path, output_dir):
     with open(file_path, 'rb') as f:
         data = f.read()
 
+    """
+    @brief: Write the binary data to a C header file.
+
+    The header file contains the following:
+    - A comment with the file name
+    - An array of unsigned char with the binary data
+    - The length of the binary data
+    """
     with open(output_file, 'w') as f:
         f.write(f"// Auto-generated header file for {file_name}\n")
         f.write(f"const unsigned char {variable_name}[] = {{\n")

@@ -23,7 +23,7 @@ CFILES = src/*.cpp includes/AI/AIController.cpp includes/Audio/AudioInitializer.
 # Platform-specific compiler and linker options
 ifeq ($(PLATFORM), windows)
     # Windows-specific settings
-    CFLAGS = -O3 -s -march=native -mtune=native -flto -fno-stack-protector \
+    CFLAGS = -O3 -s -mtune=generic -flto -fno-stack-protector \
              -fvisibility=hidden -fvisibility-inlines-hidden -fno-rtti -fno-exceptions \
              -funroll-loops -falign-functions -ffast-math
     PLATFORM_OPTS = -Llib/windows -lraylib -lopengl32 -lgdi32 -lwinmm \
